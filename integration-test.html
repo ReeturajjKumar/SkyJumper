@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photobooth Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1e1e1e;
+            color: white;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            background: linear-gradient(135deg, #FF0080, #7928CA);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            transform: translateY(-1px);
+        }
+        .settings-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(70, 255, 144, 0.2); color: #46ff90; }
+        .error { background: rgba(255, 70, 70, 0.2); color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <h1>🎯 Photobooth Integration Test</h1>
+    <p>This page tests the complete frontend ↔ backend integration</p>
+
+    <div class="test-section">
+        <h3>📡 Backend Connection Test</h3>
+        <button onclick="testConnection()">Test Backend Connection</button>
+        <div id="connectionStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>⚙️ Settings Management</h3>
+        <button onclick="loadSettings()">Load Current Settings</button>
+        <button onclick="testSettingsUpdate()">Test Settings Update</button>
+        <div id="settingsStatus"></div>
+        <div id="settingsDisplay" class="settings-display"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🎨 Effects Management</h3>
+        <button onclick="addTestEffect()">Add Test Effect</button>
+        <button onclick="toggleEffect()">Toggle First Effect</button>
+        <button onclick="removeEffect()">Remove Test Effect</button>
+        <div id="effectsStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📊 Integration Summary</h3>
+        <div id="integrationSummary">
+            <p>✅ Backend Server: <span id="backendStatus">Not tested</span></p>
+            <p>✅ API Endpoints: <span id="apiStatus">Not tested</span></p>
+            <p>✅ Settings Sync: <span id="syncStatus">Not tested</span></p>
+            <p>✅ Frontend Access: <span id="frontendStatus">Visit <a href="http://localhost:5174" target="_blank" style="color: #46C3FF;">http://localhost:5174</a> and press Ctrl+Shift+A</span></p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3002/api/admin';
+
+        async function testConnection() {
+            const status = document.getElementById('connectionStatus');
+            status.innerHTML = '<div class="status">Testing connection...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/settings`);
+                if (response.ok) {
+                    status.innerHTML = '<div class="status success">✅ Backend connection successful!</div>';
+                    document.getElementById('backendStatus').textContent = 'Running';
+                    document.getElementById('apiStatus').textContent = 'Working';
+                } else {
+                    status.innerHTML = '<div class="status error">❌ Backend responded with error</div>';
+                }
+            } catch (error) {
+                status.innerHTML = '<div class="status error">❌ Cannot connect to backend. Make sure server is running on port 3002.</div>';
+            }
+        }
+
+        async function loadSettings() {
+            const status = document.getElementById('settingsStatus');
+            const display = document.getElementById('settingsDisplay');
+            
+            status.innerHTML = '<div class="status">Loading settings...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/settings`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    status.innerHTML = '<div class="status success">✅ Settings loaded successfully!</div>';
+                    display.textContent = JSON.stringify(data.settings, null, 2);
+                    document.getElementById('syncStatus').textContent = 'Working';
+                } else {
+                    status.innerHTML = '<div class="status error">❌ Failed to load settings</div>';
+                }
+            } catch (error) {
+                status.innerHTML = '<div class="status error">❌ Error loading settings</div>';
+            }
+        }
+
+        async function testSettingsUpdate() {
+            const status = document.getElementById('settingsStatus');
+            
+            const testSettings = {
+                orientation: 'landscape',
+                effects: [
+                    { id: 'test', name: 'Test Effect', prompt: 'test prompt', enabled: true }
+                ],
+                autoCapture: true,
+                captureInterval: 4000,
+                photoCount: 5
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testSettings)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    status.innerHTML = '<div class="status success">✅ Settings updated successfully!</div>';
+                    loadSettings(); // Reload to show changes
+                } else {
+                    status.innerHTML = '<div class="status error">❌ Failed to update settings</div>';
+                }
+            } catch (error) {
+                status.innerHTML = '<div class="status error">❌ Error updating settings</div>';
+            }
+        }
+
+        async function addTestEffect() {
+            const status = document.getElementById('effectsStatus');
+            
+            // First load current settings
+            try {
+                const response = await fetch(`${API_BASE}/settings`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const settings = data.settings;
+                    settings.effects.push({
+                        id: 'dynamic_test_' + Date.now(),
+                        name: 'Dynamic Test Effect',
+                        prompt: 'dynamic test effect, colorful, vibrant',
+                        enabled: true
+                    });
+
+                    const updateResponse = await fetch(`${API_BASE}/settings`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(settings)
+                    });
+
+                    if (updateResponse.ok) {
+                        status.innerHTML = '<div class="status success">✅ Test effect added!</div>';
+                        loadSettings();
+                    }
+                }
+            } catch (error) {
+                status.innerHTML = '<div class="status error">❌ Error adding effect</div>';
+            }
+        }
+
+        async function toggleEffect() {
+            const status = document.getElementById('effectsStatus');
+            
+            try {
+                const response = await fetch(`${API_BASE}/settings`);
+                const data = await response.json();
+                
+                if (data.success && data.settings.effects.length > 0) {
+                    const settings = data.settings;
+                    settings.effects[0].enabled = !settings.effects[0].enabled;
+
+                    const updateResponse = await fetch(`${API_BASE}/settings`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(settings)
+                    });
+
+                    if (updateResponse.ok) {
+                        status.innerHTML = '<div class="status success">✅ Effect toggled!</div>';
+                        loadSettings();
+                    }
+                } else {
+                    status.innerHTML = '<div class="status error">❌ No effects to toggle</div>';
+                }
+            } catch (error) {
+                status.innerHTML = '<div class="status error">❌ Error toggling effect</div>';
+            }
+        }
+
+        async function removeEffect() {
+            const status = document.getElementById('effectsStatus');
+            
+            try {
+                const response = await fetch(`${API_BASE}/settings`);
+                const data = await response.json();
+                
+                if (data.success && data.settings.effects.length > 0) {
+                    const settings = data.settings;
+                    settings.effects.pop(); // Remove last effect
+
+                    const updateResponse = await fetch(`${API_BASE}/settings`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(settings)
+                    });
+
+                    if (updateResponse.ok) {
+                        status.innerHTML = '<div class="status success">✅ Effect removed!</div>';
+                        loadSettings();
+                    }
+                } else {
+                    status.innerHTML = '<div class="status error">❌ No effects to remove</div>';
+                }
+            } catch (error) {
+                status.innerHTML = '<div class="status error">❌ Error removing effect</div>';
+            }
+        }
+
+        // Auto-load settings on page load
+        window.addEventListener('load', () => {
+            testConnection();
+            loadSettings();
+        });
+    </script>
+</body>
+</html>

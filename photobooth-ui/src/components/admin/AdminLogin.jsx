@@ -66,47 +66,36 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
           background: rgba(255, 255, 255, 0.05);
           backdrop-filter: blur(20px);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 20px;
-          padding: 60px 50px;
+          border-radius: 16px;
+          padding: 40px;
           width: 100%;
-          max-width: 450px;
+          max-width: 400px;
           text-align: center;
           position: relative;
           z-index: 1;
-          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
         }
 
         .login-header {
-          margin-bottom: 40px;
-        }
-
-        .login-logo {
-          width: 80px;
-          height: 80px;
-          margin: 0 auto 20px;
-          animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          margin-bottom: 32px;
         }
 
         .login-title {
-          font-size: 32px;
-          font-weight: 300;
+          font-size: 24px;
+          font-weight: 600;
           color: white;
-          margin-bottom: 10px;
-          background: linear-gradient(135deg, #FF0080, #7928CA);
+          margin-bottom: 8px;
+          background: linear-gradient(135deg, #FF0080, #7928CA, #46C3FF);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
 
         .login-subtitle {
-          font-size: 16px;
+          font-size: 14px;
           color: rgba(255, 255, 255, 0.6);
-          margin-bottom: 30px;
+          margin-bottom: 24px;
+          line-height: 1.4;
         }
 
         .login-form {
@@ -275,21 +264,6 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
 
       <div className="login-card">
         <div className="login-header">
-          <svg className="login-logo" viewBox="0 0 100 100">
-            <circle cx="50" cy="35" r="15" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-            <circle cx="50" cy="50" r="12" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-            <circle cx="45" cy="33" r="2" fill="white"/>
-            <circle cx="55" cy="33" r="2" fill="white"/>
-            <circle cx="45" cy="33" r="1.5" fill="black"/>
-            <circle cx="55" cy="33" r="1.5" fill="black"/>
-            <path d="M 43 38 Q 50 41 57 38" stroke="black" strokeWidth="1.5" fill="none"/>
-            <path d="M 38 48 Q 28 45 25 52" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-            <path d="M 62 48 Q 72 45 75 52" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-            <path d="M 43 58 L 40 68" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M 57 58 L 60 68" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M 38 54 Q 20 54 18 62" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-            <path d="M 15 80 Q 50 70 85 80" stroke="#FFD700" strokeWidth="5" fill="none" strokeLinecap="round"/>
-          </svg>
           <h1 className="login-title">Admin Panel</h1>
           <p className="login-subtitle">Enter your password to access the configuration panel</p>
         </div>
@@ -315,13 +289,12 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
             className={`login-btn ${isLoading ? 'loading' : ''}`}
             disabled={isLoading}
           >
-            {isLoading ? '🔐 Authenticating...' : '🔐 Login'}
+            {isLoading ? 'Authenticating...' : 'Login'}
           </button>
         </form>
 
         <div className="login-footer">
           <div className="footer-text">
-            <span className="security-icon">🛡️</span>
             Secure Admin Access
           </div>
         </div>

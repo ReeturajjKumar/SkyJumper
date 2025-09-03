@@ -1,8 +1,25 @@
 import React, { useState, useEffect } from 'react';
 
-const OutputScreen = ({ onComplete }) => {
+const OutputScreen = ({ capturedImages, onComplete }) => {
   const [isPrinting, setIsPrinting] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
+
+  // Debug: Log what we received
+  useEffect(() => {
+    console.log('📷 OutputScreen received capturedImages:', capturedImages);
+    console.log('📷 Number of images:', capturedImages?.length || 0);
+    if (capturedImages && capturedImages.length > 0) {
+      capturedImages.forEach((img, index) => {
+        console.log(`📷 Image ${index}:`, {
+          hasProcessed: !!img.processed,
+          hasOriginal: !!img.original,
+          hasEffect: !!img.effect,
+          effectName: img.effect?.name,
+          isString: typeof img === 'string'
+        });
+      });
+    }
+  }, [capturedImages]);
 
   useEffect(() => {
     // Trigger animation after component mounts
@@ -32,17 +49,24 @@ const OutputScreen = ({ onComplete }) => {
           box-sizing: border-box;
         }
 
+        body, html {
+          overflow-x: hidden;
+          width: 100%;
+        }
+
         .output-container {
           width: 100vw;
-          min-height: 100vh;
+          height: 100vh;
           background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
-          padding: 60px 20px;
+          padding: 30px 20px;
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           position: relative;
           overflow-x: hidden;
+          box-sizing: border-box;
         }
 
         .output-container::before {
@@ -64,7 +88,7 @@ const OutputScreen = ({ onComplete }) => {
 
         .output-header {
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: 20px;
           z-index: 1;
           animation: slideDown 0.8s ease;
         }
@@ -81,7 +105,7 @@ const OutputScreen = ({ onComplete }) => {
         }
 
         .output-title {
-          font-size: 48px;
+          font-size: 36px;
           font-weight: 300;
           background: linear-gradient(135deg, #FF0080, #7928CA, #46C3FF);
           -webkit-background-clip: text;
@@ -98,13 +122,16 @@ const OutputScreen = ({ onComplete }) => {
 
         .photo-strip-wrapper {
           perspective: 1000px;
-          margin-bottom: 50px;
+          margin-bottom: 20px;
           z-index: 1;
+          flex: 1;
+          display: flex;
+          align-items: center;
         }
 
         .photo-strip-container {
-          width: 1200px;
-          max-width: 95vw;
+          width: 1000px;
+          margin: 0 auto;
           background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 50%, rgba(240, 147, 251, 0.3) 100%);
           border-radius: 15px;
           padding: 40px;
@@ -148,7 +175,7 @@ const OutputScreen = ({ onComplete }) => {
 
         .strip-photo {
           flex: 1;
-          height: 420px;
+          height: 350px;
           border-radius: 15px;
           display: flex;
           justify-content: center;
@@ -210,6 +237,21 @@ const OutputScreen = ({ onComplete }) => {
           border-radius: 20px;
           font-size: 14px;
           font-weight: 600;
+        }
+
+        .effect-name {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          background: rgba(0,0,0,0.7);
+          backdrop-filter: blur(10px);
+          padding: 5px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 600;
+          color: white;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         .strip-logo {
@@ -428,8 +470,9 @@ const OutputScreen = ({ onComplete }) => {
           }
 
           .photo-strip-container {
-            max-width: 98%;
+            max-width: calc(100% - 20px);
             padding: 25px;
+            margin: 0 10px;
           }
           
           .photo-strip {
@@ -488,21 +531,95 @@ const OutputScreen = ({ onComplete }) => {
       <div className="photo-strip-wrapper">
         <div className={`photo-strip-container ${isAnimated ? 'animated' : ''}`}>
           <div className="photo-strip">
-            <div className="strip-photo vintage">
-              <div className="photo-bg"></div>
-              <span className="photo-content">📸</span>
-              <span className="photo-number">1</span>
-            </div>
-            <div className="strip-photo bw">
-              <div className="photo-bg"></div>
-              <span className="photo-content">✨</span>
-              <span className="photo-number">2</span>
-            </div>
-            <div className="strip-photo vivid">
-              <div className="photo-bg"></div>
-              <span className="photo-content">🎉</span>
-              <span className="photo-number">3</span>
-            </div>
+            {capturedImages && capturedImages.length > 0 ? (
+              capturedImages.slice(0, 3).map((imageData, index) => {
+                // Handle both string URLs (original captured) and object structure (processed)
+                let imageSrc, effectName;
+                
+                if (typeof imageData === 'string') {
+                  // Original captured image (just a blob URL string)
+                  imageSrc = imageData;
+                  effectName = 'Original Photo';
+                } else if (imageData && typeof imageData === 'object') {
+                  // Processed image object with structure {original, processed, effect}
+                  imageSrc = imageData.processed || imageData.original || imageData;
+                  effectName = imageData.effect?.name || 'Original Photo';
+                } else {
+                  // Fallback
+                  imageSrc = imageData;
+                  effectName = 'Photo';
+                }
+                
+                console.log(`🖼️ Rendering image ${index + 1}:`, {
+                  src: imageSrc?.substring(0, 50) + '...',
+                  effect: effectName,
+                  isString: typeof imageData === 'string',
+                  hasProcessed: !!imageData.processed,
+                  hasOriginal: !!imageData.original,
+                  imageData: imageData
+                });
+                
+                return (
+                  <div key={index} className="strip-photo">
+                    {imageSrc ? (
+                      <img 
+                        src={imageSrc} 
+                        alt={`Photo ${index + 1}`}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          borderRadius: '15px'
+                        }}
+                        onError={(e) => {
+                          console.error(`❌ Failed to load image ${index + 1}:`, imageSrc);
+                          e.target.style.display = 'none';
+                        }}
+                        onLoad={() => {
+                          console.log(`✅ Successfully loaded image ${index + 1}`);
+                        }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: '100%',
+                        height: '100%',
+                        background: 'linear-gradient(45deg, #FF0080, #7928CA)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontSize: '60px'
+                      }}>
+                        📸
+                      </div>
+                    )}
+                    <span className="photo-number">{index + 1}</span>
+                    {effectName !== 'Original Photo' && (
+                      <span className="effect-name">{effectName}</span>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              // Fallback to original placeholder content
+              <>
+                <div className="strip-photo vintage">
+                  <div className="photo-bg"></div>
+                  <span className="photo-content">📸</span>
+                  <span className="photo-number">1</span>
+                </div>
+                <div className="strip-photo bw">
+                  <div className="photo-bg"></div>
+                  <span className="photo-content">✨</span>
+                  <span className="photo-number">2</span>
+                </div>
+                <div className="strip-photo vivid">
+                  <div className="photo-bg"></div>
+                  <span className="photo-content">🎉</span>
+                  <span className="photo-number">3</span>
+                </div>
+              </>
+            )}
           </div>
           
           <div className="strip-logo">

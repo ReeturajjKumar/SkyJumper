@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { SettingsProvider } from './context/SettingsContext';
 import WelcomeScreen from './components/WelcomeScreen';
 import CameraScreen from './components/CameraScreen';
 import ProcessingScreen from './components/ProcessingScreen';
@@ -7,90 +7,197 @@ import OutputScreen from './components/OutputScreen';
 import ThankYouScreen from './components/ThankYouScreen';
 import AdminPanel from './components/admin/AdminPanel';
 
-// Photobooth Flow Component
-function PhotoboothFlow() {
-  const [currentScreen, setCurrentScreen] = useState('welcome');
+// Admin Overlay Component
+function AdminOverlay({ isOpen, onClose }) {
+  if (!isOpen) return null;
 
   return (
-    <div className="app">
-      {currentScreen === 'welcome' && (
-        <WelcomeScreen onStart={() => setCurrentScreen('camera')} />
-      )}
-      {currentScreen === 'camera' && (
-        <CameraScreen onComplete={() => setCurrentScreen('processing')} />
-      )}
-      {currentScreen === 'processing' && (
-        <ProcessingScreen onComplete={() => setCurrentScreen('output')} />
-      )}
-      {currentScreen === 'output' && (
-        <OutputScreen onComplete={() => setCurrentScreen('thankyou')} />
-      )}
-      {currentScreen === 'thankyou' && (
-        <ThankYouScreen onNewSession={() => setCurrentScreen('welcome')} />
-      )}
-    </div>
-  );
-}
+    <div className="admin-overlay">
+      <style>{`
+        .admin-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(10px);
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: overlayFadeIn 0.3s ease;
+        }
 
-// Admin Access Component
-function AdminAccess() {
-  return (
-    <div style={{
-      position: 'fixed',
-      bottom: '20px',
-      right: '20px',
-      zIndex: 1000
-    }}>
-      <a 
-        href="/admin"
-        style={{
-          background: 'rgba(0, 0, 0, 0.8)',
-          color: 'rgba(255, 255, 255, 0.6)',
-          padding: '10px 15px',
-          borderRadius: '25px',
-          textDecoration: 'none',
-          fontSize: '12px',
-          fontWeight: '600',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          backdropFilter: 'blur(10px)',
-          transition: 'all 0.3s ease'
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.background = 'rgba(255, 0, 128, 0.2)';
-          e.target.style.color = 'white';
-          e.target.style.borderColor = 'rgba(255, 0, 128, 0.5)';
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.background = 'rgba(0, 0, 0, 0.8)';
-          e.target.style.color = 'rgba(255, 255, 255, 0.6)';
-          e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-        }}
-      >
-        ⚙️ Admin
-      </a>
+        @keyframes overlayFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .admin-window {
+          width: 95vw;
+          height: 95vh;
+          background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+          border-radius: 20px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8);
+          position: relative;
+          overflow: hidden;
+          animation: windowSlideIn 0.4s ease;
+        }
+
+        @keyframes windowSlideIn {
+          from { 
+            transform: scale(0.9) translateY(-50px);
+            opacity: 0;
+          }
+          to { 
+            transform: scale(1) translateY(0);
+            opacity: 1;
+          }
+        }
+
+        .admin-close-btn {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: rgba(255, 70, 70, 0.2);
+          color: #ff4646;
+          border: 1px solid rgba(255, 70, 70, 0.3);
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          cursor: pointer;
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          font-weight: bold;
+          transition: all 0.3s ease;
+        }
+
+        .admin-close-btn:hover {
+          background: rgba(255, 70, 70, 0.3);
+          transform: scale(1.1);
+        }
+
+        .admin-hotkey-hint {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 20px;
+          padding: 8px 15px;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 12px;
+          font-weight: 600;
+          z-index: 10000;
+        }
+
+        .admin-panel-container {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+        }
+      `}</style>
+      
+      <div className="admin-window">
+        <div className="admin-panel-container">
+          <AdminPanel isOverlay={true} onClose={onClose} />
+        </div>
+      </div>
     </div>
   );
 }
 
 function App() {
+  const [currentScreen, setCurrentScreen] = useState('welcome');
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [capturedImages, setCapturedImages] = useState([]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // Check for Ctrl+Shift+A
+      if (event.ctrlKey && event.shiftKey && event.key === 'A') {
+        event.preventDefault();
+        setIsAdminOpen(prev => !prev);
+      }
+      
+      // Close admin panel with Escape key
+      if (event.key === 'Escape' && isAdminOpen) {
+        setIsAdminOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isAdminOpen]);
+
   return (
-    <Router>
-      <Routes>
-        {/* Main Photobooth Route */}
-        <Route path="/" element={
-          <>
-            <PhotoboothFlow />
-            <AdminAccess />
-          </>
-        } />
-        
-        {/* Admin Panel Route */}
-        <Route path="/admin" element={<AdminPanel />} />
-        
-        {/* Redirect any unknown routes to home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+    <SettingsProvider>
+      <div className="app">
+        {currentScreen === 'welcome' && (
+          <WelcomeScreen onStart={() => setCurrentScreen('camera')} />
+        )}
+        {currentScreen === 'camera' && (
+          <CameraScreen onComplete={(images) => {
+            setCapturedImages(images);
+            setCurrentScreen('processing');
+          }} />
+        )}
+        {currentScreen === 'processing' && (
+          <ProcessingScreen 
+            capturedImages={capturedImages}
+            onComplete={(processedImages) => {
+              setCapturedImages(processedImages || capturedImages);
+              setCurrentScreen('output');
+            }} 
+          />
+        )}
+        {currentScreen === 'output' && (
+          <OutputScreen 
+            capturedImages={capturedImages}
+            onComplete={() => setCurrentScreen('thankyou')} 
+          />
+        )}
+        {currentScreen === 'thankyou' && (
+          <ThankYouScreen onNewSession={() => setCurrentScreen('welcome')} />
+        )}
+      </div>
+
+      {/* Admin Panel Overlay */}
+      <AdminOverlay 
+        isOpen={isAdminOpen} 
+        onClose={() => setIsAdminOpen(false)} 
+      />
+
+      {/* Hidden shortcut hint */}
+      {!isAdminOpen && (
+        <div style={{
+          position: 'fixed',
+          bottom: '10px',
+          right: '10px',
+          background: 'rgba(0, 0, 0, 0.6)',
+          color: 'rgba(255, 255, 255, 0.4)',
+          padding: '5px 10px',
+          borderRadius: '15px',
+          fontSize: '10px',
+          fontFamily: 'monospace',
+          zIndex: 1000,
+          opacity: 0.3,
+          transition: 'opacity 0.3s ease',
+          pointerEvents: 'none'
+        }}>
+          Ctrl+Shift+A
+        </div>
+      )}
+    </SettingsProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const EffectsManager = ({ settings, onUpdate }) => {
   const [editingEffect, setEditingEffect] = useState(null);
@@ -8,19 +8,38 @@ const EffectsManager = ({ settings, onUpdate }) => {
     prompt: '',
     enabled: true
   });
+  const [predefinedEffects, setPredefinedEffects] = useState([]);
+  const [loadingPredefined, setLoadingPredefined] = useState(true);
+  const [predefinedError, setPredefinedError] = useState(null);
 
-  const predefinedEffects = [
-    { id: 'normal', name: 'Normal', prompt: '', icon: '📸' },
-    { id: 'vintage', name: 'Vintage', prompt: 'vintage style, sepia tone, old film aesthetic', icon: '📸' },
-    { id: 'bw', name: 'Black & White', prompt: 'black and white, monochrome, artistic photography', icon: '⚫' },
-    { id: 'vivid', name: 'Vivid Colors', prompt: 'vibrant colors, saturated, high contrast, pop art style', icon: '🌈' },
-    { id: 'manga', name: 'Manga Style', prompt: 'manga style, anime art, vibrant colors, comic book illustration', icon: '🎨' },
-    { id: 'pixar', name: 'Pixar Theme', prompt: 'Disney-Pixar style 3D animated characters, smooth rendering, expressive eyes, vibrant colors, playful animation-style lighting', icon: '🎭' },
-    { id: 'ghibli', name: 'Studio Ghibli', prompt: 'studio ghibli style, anime, soft colors, dreamy atmosphere, hand-drawn animation', icon: '🌸' },
-    { id: 'cyberpunk', name: 'Cyberpunk', prompt: 'cyberpunk aesthetic, neon lights, futuristic, high tech, dark atmosphere', icon: '🔮' },
-    { id: 'watercolor', name: 'Watercolor', prompt: 'watercolor painting style, soft brushstrokes, artistic, dreamy colors', icon: '🎨' },
-    { id: 'cartoon', name: 'Cartoon', prompt: 'cartoon style, animated, bright colors, exaggerated features, playful', icon: '😄' }
-  ];
+  // Fetch enabled effects from settings as predefined effects
+  const fetchPredefinedEffects = async () => {
+    try {
+      setLoadingPredefined(true);
+      setPredefinedError(null);
+      
+      const response = await fetch('http://localhost:3002/api/admin/settings');
+      const data = await response.json();
+      
+      if (data.success && data.settings.effects) {
+        // Get only enabled effects from settings
+        const enabledEffects = data.settings.effects.filter(effect => effect.enabled);
+        setPredefinedEffects(enabledEffects);
+      } else {
+        setPredefinedError('Failed to load effects from database');
+      }
+    } catch (error) {
+      console.error('Error fetching effects:', error);
+      setPredefinedError('Failed to connect to server');
+    } finally {
+      setLoadingPredefined(false);
+    }
+  };
+
+  // Load predefined effects on component mount
+  useEffect(() => {
+    fetchPredefinedEffects();
+  }, []);
 
   const handleEffectToggle = (effectId) => {
     const updatedEffects = settings.effects.map(effect => 
@@ -72,69 +91,83 @@ const EffectsManager = ({ settings, onUpdate }) => {
     <div className="effects-manager">
       <style>{`
         .effects-manager {
-          max-width: 1000px;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          overflow: hidden;
         }
 
-        .section-description {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 15px;
-          padding: 25px;
-          margin-bottom: 30px;
-          color: rgba(255, 255, 255, 0.8);
-          line-height: 1.6;
+        .effects-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          overflow: hidden;
         }
 
-        .section-description h3 {
-          color: white;
-          margin-bottom: 15px;
+        .effects-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 16px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .effects-title {
           font-size: 18px;
           font-weight: 600;
-        }
-
-        .current-effects {
-          margin-bottom: 40px;
-        }
-
-        .section-title {
-          font-size: 20px;
-          font-weight: 600;
           color: white;
-          margin-bottom: 20px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
+        }
+
+        .effects-count {
+          background: rgba(255, 0, 128, 0.15);
+          color: #FF0080;
+          padding: 4px 12px;
+          border-radius: 16px;
+          font-size: 12px;
+          font-weight: 600;
         }
 
         .effects-grid {
+          flex: 1;
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-          gap: 20px;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 16px;
+          overflow-y: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          padding-right: 4px;
+        }
+
+        .effects-grid::-webkit-scrollbar {
+          display: none;
         }
 
         .effect-card {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 15px;
-          padding: 25px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          padding: 20px;
           transition: all 0.3s ease;
+          height: fit-content;
         }
 
         .effect-card:hover {
           background: rgba(255, 255, 255, 0.08);
-          transform: translateY(-2px);
+          border-color: rgba(255, 255, 255, 0.15);
         }
 
         .effect-card.disabled {
-          opacity: 0.6;
-          filter: grayscale(0.5);
+          opacity: 0.5;
+          filter: grayscale(0.3);
         }
 
         .effect-header {
           display: flex;
-          justify-content: between;
-          align-items: center;
-          margin-bottom: 20px;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 16px;
         }
 
         .effect-info {
@@ -142,38 +175,30 @@ const EffectsManager = ({ settings, onUpdate }) => {
         }
 
         .effect-name {
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 600;
           color: white;
-          margin-bottom: 5px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
+          margin-bottom: 4px;
         }
 
         .effect-id {
-          font-size: 12px;
+          font-size: 11px;
           color: rgba(255, 255, 255, 0.5);
-          font-family: monospace;
-          background: rgba(255, 255, 255, 0.1);
-          padding: 2px 8px;
-          border-radius: 10px;
-        }
-
-        .effect-controls {
-          display: flex;
-          align-items: center;
-          gap: 15px;
+          font-family: 'SF Mono', 'Monaco', monospace;
+          background: rgba(0, 0, 0, 0.3);
+          padding: 2px 6px;
+          border-radius: 8px;
         }
 
         .toggle-switch {
           position: relative;
-          width: 60px;
-          height: 30px;
+          width: 44px;
+          height: 24px;
           background: rgba(255, 255, 255, 0.2);
-          border-radius: 15px;
+          border-radius: 12px;
           cursor: pointer;
           transition: background-color 0.3s ease;
+          flex-shrink: 0;
         }
 
         .toggle-switch.enabled {
@@ -182,96 +207,106 @@ const EffectsManager = ({ settings, onUpdate }) => {
 
         .toggle-slider {
           position: absolute;
-          top: 3px;
-          left: 3px;
-          width: 24px;
-          height: 24px;
+          top: 2px;
+          left: 2px;
+          width: 20px;
+          height: 20px;
           background: white;
           border-radius: 50%;
           transition: transform 0.3s ease;
         }
 
         .toggle-switch.enabled .toggle-slider {
-          transform: translateX(30px);
+          transform: translateX(20px);
         }
 
         .effect-prompt {
-          margin-bottom: 15px;
+          margin-bottom: 12px;
         }
 
         .prompt-label {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.7);
-          margin-bottom: 8px;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 6px;
           font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .prompt-textarea {
           width: 100%;
-          min-height: 80px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 10px;
-          padding: 12px;
+          height: 70px;
+          background: rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          padding: 10px;
           color: white;
-          font-size: 14px;
+          font-size: 13px;
           font-family: inherit;
-          resize: vertical;
+          resize: none;
           transition: all 0.3s ease;
+          line-height: 1.4;
         }
 
         .prompt-textarea:focus {
           outline: none;
           border-color: #FF0080;
-          background: rgba(255, 255, 255, 0.15);
-          box-shadow: 0 0 10px rgba(255, 0, 128, 0.2);
+          background: rgba(0, 0, 0, 0.4);
+          box-shadow: 0 0 0 2px rgba(255, 0, 128, 0.1);
         }
 
         .prompt-textarea::placeholder {
-          color: rgba(255, 255, 255, 0.4);
+          color: rgba(255, 255, 255, 0.3);
         }
 
         .effect-actions {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-top: 15px;
         }
 
         .prompt-length {
-          font-size: 12px;
-          color: rgba(255, 255, 255, 0.5);
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.4);
         }
 
         .remove-btn {
-          background: rgba(255, 70, 70, 0.2);
-          color: #ff4646;
+          background: rgba(255, 70, 70, 0.15);
+          color: #ff6b6b;
           border: 1px solid rgba(255, 70, 70, 0.3);
-          padding: 8px 16px;
-          border-radius: 20px;
+          padding: 6px 12px;
+          border-radius: 16px;
           cursor: pointer;
-          font-size: 12px;
+          font-size: 11px;
+          font-weight: 500;
           transition: all 0.3s ease;
         }
 
         .remove-btn:hover {
-          background: rgba(255, 70, 70, 0.3);
+          background: rgba(255, 70, 70, 0.25);
+          transform: translateY(-1px);
         }
 
         .add-effect-section {
-          background: rgba(255, 255, 255, 0.03);
-          border: 2px dashed rgba(255, 255, 255, 0.2);
-          border-radius: 15px;
-          padding: 30px;
-          margin-bottom: 30px;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px dashed rgba(255, 255, 255, 0.15);
+          border-radius: 12px;
+          padding: 20px;
+          flex-shrink: 0;
         }
 
-        .add-effect-form {
+        .add-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: white;
+          margin-bottom: 16px;
+        }
+
+        .add-form {
           display: grid;
-          grid-template-columns: 1fr 2fr 1fr auto;
-          gap: 15px;
+          grid-template-columns: 1fr 2fr auto;
+          gap: 12px;
           align-items: end;
-          margin-bottom: 20px;
         }
 
         .form-group {
@@ -280,93 +315,219 @@ const EffectsManager = ({ settings, onUpdate }) => {
         }
 
         .form-label {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.7);
-          margin-bottom: 8px;
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 4px;
           font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .form-input {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 10px;
-          padding: 12px;
+          background: rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          padding: 10px;
           color: white;
-          font-size: 14px;
+          font-size: 13px;
           transition: all 0.3s ease;
         }
 
         .form-input:focus {
           outline: none;
           border-color: #FF0080;
-          background: rgba(255, 255, 255, 0.15);
+          background: rgba(0, 0, 0, 0.4);
+          box-shadow: 0 0 0 2px rgba(255, 0, 128, 0.1);
         }
 
         .add-btn {
           background: linear-gradient(135deg, #FF0080, #7928CA);
           color: white;
           border: none;
-          padding: 12px 20px;
-          border-radius: 10px;
+          padding: 10px 16px;
+          border-radius: 8px;
           cursor: pointer;
           font-weight: 600;
+          font-size: 13px;
           transition: all 0.3s ease;
+          height: fit-content;
         }
 
         .add-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 20px rgba(255, 0, 128, 0.3);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3);
         }
 
-        .predefined-effects {
-          margin-top: 40px;
+        .predefined-section {
+          flex-shrink: 0;
+        }
+
+        .predefined-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+
+        .predefined-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: white;
+        }
+
+        .refresh-btn {
+          background: rgba(255, 255, 255, 0.06);
+          color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          padding: 6px 12px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 12px;
+          transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover:not(:disabled) {
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+        }
+
+        .refresh-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
 
         .predefined-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 15px;
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+          gap: 12px;
         }
 
         .predefined-card {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 15px;
-          padding: 20px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+          padding: 12px;
           text-align: center;
           cursor: pointer;
           transition: all 0.3s ease;
         }
 
         .predefined-card:hover {
-          background: rgba(255, 255, 255, 0.1);
-          transform: translateY(-2px);
+          background: rgba(255, 255, 255, 0.08);
+          transform: translateY(-1px);
         }
 
         .predefined-card.exists {
           opacity: 0.5;
           cursor: not-allowed;
           border-color: rgba(70, 255, 144, 0.3);
-          background: rgba(70, 255, 144, 0.1);
-        }
-
-        .predefined-icon {
-          font-size: 32px;
-          margin-bottom: 10px;
-          display: block;
+          background: rgba(70, 255, 144, 0.05);
         }
 
         .predefined-name {
-          font-size: 16px;
+          font-size: 14px;
           font-weight: 600;
           color: white;
-          margin-bottom: 5px;
+          margin-bottom: 4px;
+        }
+
+        .predefined-status {
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.5);
         }
 
         .predefined-prompt {
-          font-size: 12px;
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.7);
+          margin: 6px 0;
+          line-height: 1.3;
+          min-height: 30px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .enabled-effect {
+          border-color: rgba(70, 255, 144, 0.3);
+          background: rgba(70, 255, 144, 0.05);
+        }
+
+        .enabled-effect:hover {
+          background: rgba(70, 255, 144, 0.1);
+          cursor: default;
+        }
+
+        .predefined-loading {
+          grid-column: 1 / -1;
+          text-align: center;
+          padding: 40px 20px;
           color: rgba(255, 255, 255, 0.6);
-          line-height: 1.4;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .loading-spinner {
+          width: 24px;
+          height: 24px;
+          border: 2px solid rgba(255, 255, 255, 0.1);
+          border-top: 2px solid #FF0080;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        .predefined-error {
+          grid-column: 1 / -1;
+          text-align: center;
+          padding: 40px 20px;
+          color: rgba(255, 255, 255, 0.6);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .error-icon {
+          font-size: 24px;
+        }
+
+        .error-message {
+          color: #ff6b6b;
+          font-size: 14px;
+        }
+
+        .retry-btn, .seed-btn {
+          background: rgba(255, 0, 128, 0.15);
+          color: #FF0080;
+          border: 1px solid rgba(255, 0, 128, 0.3);
+          padding: 8px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 12px;
+          transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover, .seed-btn:hover {
+          background: rgba(255, 0, 128, 0.25);
+          border-color: rgba(255, 0, 128, 0.5);
+        }
+
+        .predefined-empty {
+          grid-column: 1 / -1;
+          text-align: center;
+          padding: 40px 20px;
+          color: rgba(255, 255, 255, 0.6);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
         }
 
         /* Responsive Design */
@@ -375,49 +536,39 @@ const EffectsManager = ({ settings, onUpdate }) => {
             grid-template-columns: 1fr;
           }
 
-          .add-effect-form {
+          .add-form {
             grid-template-columns: 1fr;
-            gap: 15px;
+            gap: 12px;
           }
 
           .predefined-grid {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
           }
         }
       `}</style>
 
-      <div className="section-description">
-        <h3>🎨 AI Effects & Prompts Management</h3>
-        <p>
-          Configure photo effects and their corresponding AI prompts. Each effect uses advanced AI to transform 
-          captured photos. You can enable/disable effects, customize prompts, and add new effects. 
-          The prompts are sent to Black Forest AI's Flux model for image transformation.
-        </p>
-      </div>
-
-      <div className="current-effects">
-        <h3 className="section-title">
-          ⚡ Active Effects ({settings.effects.filter(e => e.enabled).length}/{settings.effects.length})
-        </h3>
+      <div className="effects-content">
+        <div className="effects-header">
+          <div className="effects-title">AI Effects & Prompts</div>
+          <div className="effects-count">
+            {settings.effects.filter(e => e.enabled).length} / {settings.effects.length} Active
+          </div>
+        </div>
         
         <div className="effects-grid">
           {settings.effects.map(effect => (
             <div key={effect.id} className={`effect-card ${!effect.enabled ? 'disabled' : ''}`}>
               <div className="effect-header">
                 <div className="effect-info">
-                  <div className="effect-name">
-                    {effect.name}
-                    <span className="effect-id">#{effect.id}</span>
-                  </div>
+                  <div className="effect-name">{effect.name}</div>
+                  <span className="effect-id">#{effect.id}</span>
                 </div>
                 
-                <div className="effect-controls">
-                  <div 
-                    className={`toggle-switch ${effect.enabled ? 'enabled' : ''}`}
-                    onClick={() => handleEffectToggle(effect.id)}
-                  >
-                    <div className="toggle-slider"></div>
-                  </div>
+                <div 
+                  className={`toggle-switch ${effect.enabled ? 'enabled' : ''}`}
+                  onClick={() => handleEffectToggle(effect.id)}
+                >
+                  <div className="toggle-slider"></div>
                 </div>
               </div>
 
@@ -434,13 +585,13 @@ const EffectsManager = ({ settings, onUpdate }) => {
 
               <div className="effect-actions">
                 <span className="prompt-length">
-                  {effect.prompt.length}/500 characters
+                  {effect.prompt.length}/500
                 </span>
                 <button 
                   className="remove-btn"
                   onClick={() => handleRemoveEffect(effect.id)}
                 >
-                  🗑️ Remove
+                  Remove
                 </button>
               </div>
             </div>
@@ -449,9 +600,9 @@ const EffectsManager = ({ settings, onUpdate }) => {
       </div>
 
       <div className="add-effect-section">
-        <h3 className="section-title">➕ Add New Effect</h3>
+        <div className="add-title">Add New Effect</div>
         
-        <div className="add-effect-form">
+        <div className="add-form">
           <div className="form-group">
             <label className="form-label">Effect Name</label>
             <input
@@ -481,45 +632,67 @@ const EffectsManager = ({ settings, onUpdate }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Effect ID</label>
-            <input
-              type="text"
-              className="form-input"
-              value={newEffect.id}
-              onChange={(e) => setNewEffect({...newEffect, id: e.target.value})}
-              placeholder="auto-generated"
-            />
-          </div>
-
           <button className="add-btn" onClick={handleAddEffect}>
-            ➕ Add Effect
+            Add Effect
           </button>
         </div>
       </div>
 
-      <div className="predefined-effects">
-        <h3 className="section-title">
-          📦 Predefined Effects Library
-        </h3>
+      <div className="predefined-section">
+        <div className="predefined-header">
+          <div className="predefined-title">Enabled Effects from Database</div>
+          <button 
+            className="refresh-btn"
+            onClick={fetchPredefinedEffects}
+            disabled={loadingPredefined}
+          >
+            {loadingPredefined ? '⟳' : '↻'} Refresh
+          </button>
+        </div>
         
         <div className="predefined-grid">
-          {predefinedEffects.map(effect => {
-            const exists = settings.effects.some(e => e.id === effect.id);
-            return (
-              <div
-                key={effect.id}
-                className={`predefined-card ${exists ? 'exists' : ''}`}
-                onClick={() => !exists && handleAddPredefinedEffect(effect)}
-              >
-                <span className="predefined-icon">{effect.icon}</span>
-                <div className="predefined-name">{effect.name}</div>
-                <div className="predefined-prompt">
-                  {exists ? '✅ Already Added' : effect.prompt.substring(0, 60) + '...'}
+          {loadingPredefined ? (
+            <div className="predefined-loading">
+              <div className="loading-spinner"></div>
+              <span>Loading effects...</span>
+            </div>
+          ) : predefinedError ? (
+            <div className="predefined-error">
+              <span className="error-icon">⚠️</span>
+              <span className="error-message">{predefinedError}</span>
+              <button className="retry-btn" onClick={fetchPredefinedEffects}>
+                Retry
+              </button>
+            </div>
+          ) : predefinedEffects.length === 0 ? (
+            <div className="predefined-empty">
+              <span>No enabled effects in database</span>
+              <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                Add and enable effects above to see them here
+              </span>
+            </div>
+          ) : (
+            predefinedEffects.map(effect => {
+              return (
+                <div
+                  key={effect.id}
+                  className="predefined-card enabled-effect"
+                  title={effect.prompt}
+                >
+                  <div className="predefined-name">{effect.name}</div>
+                  <div className="predefined-prompt">
+                    {effect.prompt.length > 50 ? 
+                      `${effect.prompt.substring(0, 50)}...` : 
+                      effect.prompt
+                    }
+                  </div>
+                  <div className="predefined-status">
+                    ✓ Enabled
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
     </div>

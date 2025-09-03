@@ -6,149 +6,96 @@ const OrientationSettings = ({ settings, onUpdate }) => {
       id: 'portrait', 
       name: 'Portrait', 
       description: 'Vertical orientation (9:16 ratio)', 
-      icon: '📱',
       dimensions: '720 × 1280'
     },
     { 
       id: 'landscape', 
       name: 'Landscape', 
       description: 'Horizontal orientation (16:9 ratio)', 
-      icon: '📺',
       dimensions: '1280 × 720'
     },
     { 
       id: 'square', 
       name: 'Square', 
       description: 'Perfect square (1:1 ratio)', 
-      icon: '⬜',
       dimensions: '1080 × 1080'
     }
   ];
 
-  const handleOrientationChange = (orientation) => {
-    onUpdate('orientation', orientation);
+  const handleOrientationChange = async (orientation) => {
+    await onUpdate('orientation', orientation);
   };
 
   return (
     <div className="orientation-settings">
       <style>{`
         .orientation-settings {
-          max-width: 800px;
-        }
-
-        .settings-description {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 15px;
-          padding: 25px;
-          margin-bottom: 40px;
-          color: rgba(255, 255, 255, 0.8);
-          line-height: 1.6;
-        }
-
-        .settings-description h3 {
-          color: white;
-          margin-bottom: 15px;
-          font-size: 18px;
-          font-weight: 600;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
         }
 
         .orientation-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 25px;
-          margin-bottom: 40px;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 16px;
         }
 
         .orientation-card {
-          background: rgba(255, 255, 255, 0.05);
-          border: 2px solid rgba(255, 255, 255, 0.1);
-          border-radius: 20px;
-          padding: 30px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          padding: 20px;
           cursor: pointer;
           transition: all 0.3s ease;
           text-align: center;
           position: relative;
-          overflow: hidden;
         }
 
-        .orientation-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(121, 40, 202, 0.1));
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-
-        .orientation-card:hover::before {
-          opacity: 1;
+        .orientation-card:hover {
+          background: rgba(255, 255, 255, 0.08);
+          transform: translateY(-2px);
+          border-color: rgba(255, 255, 255, 0.15);
         }
 
         .orientation-card.active {
           border-color: #FF0080;
-          background: linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(121, 40, 202, 0.15));
-          transform: translateY(-5px);
-          box-shadow: 0 15px 40px rgba(255, 0, 128, 0.2);
-        }
-
-        .orientation-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .orientation-icon {
-          font-size: 48px;
-          margin-bottom: 20px;
-          display: block;
-          filter: grayscale(0.5);
-          transition: filter 0.3s ease;
-        }
-
-        .orientation-card.active .orientation-icon,
-        .orientation-card:hover .orientation-icon {
-          filter: grayscale(0);
+          background: rgba(255, 0, 128, 0.1);
+          box-shadow: 0 8px 32px rgba(255, 0, 128, 0.2);
         }
 
         .orientation-name {
-          font-size: 22px;
+          font-size: 18px;
           font-weight: 600;
           color: white;
-          margin-bottom: 10px;
-          position: relative;
-          z-index: 1;
+          margin-bottom: 8px;
         }
 
         .orientation-description {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.7);
-          margin-bottom: 15px;
-          position: relative;
-          z-index: 1;
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 12px;
+          line-height: 1.4;
         }
 
         .orientation-dimensions {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 20px;
-          padding: 8px 16px;
-          font-size: 12px;
-          color: rgba(255, 255, 255, 0.8);
-          font-family: monospace;
+          background: rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          padding: 6px 12px;
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.7);
+          font-family: 'SF Mono', 'Monaco', monospace;
           display: inline-block;
-          position: relative;
-          z-index: 1;
         }
 
         .active-indicator {
           position: absolute;
-          top: 15px;
-          right: 15px;
-          width: 24px;
-          height: 24px;
+          top: 12px;
+          right: 12px;
+          width: 18px;
+          height: 18px;
           background: linear-gradient(135deg, #46ff90, #25D366);
           border-radius: 50%;
           display: flex;
@@ -165,105 +112,76 @@ const OrientationSettings = ({ settings, onUpdate }) => {
         }
 
         .preview-section {
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 20px;
-          padding: 30px;
-          margin-top: 30px;
-        }
-
-        .preview-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: white;
-          margin-bottom: 20px;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 12px;
+          padding: 20px;
           display: flex;
+          gap: 24px;
           align-items: center;
-          gap: 10px;
-        }
-
-        .preview-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 200px;
-          position: relative;
         }
 
         .preview-frame {
-          background: linear-gradient(135deg, rgba(255, 0, 128, 0.2), rgba(121, 40, 202, 0.2));
-          border: 2px solid rgba(255, 0, 128, 0.3);
-          border-radius: 15px;
+          background: linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(121, 40, 202, 0.15));
+          border: 1px solid rgba(255, 0, 128, 0.3);
+          border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
-          font-size: 14px;
-          font-weight: 600;
-          position: relative;
-          overflow: hidden;
-          transition: all 0.3s ease;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 12px;
+          font-weight: 500;
+          flex-shrink: 0;
         }
 
         .preview-frame.portrait {
-          width: 120px;
-          height: 200px;
+          width: 60px;
+          height: 100px;
         }
 
         .preview-frame.landscape {
-          width: 200px;
-          height: 120px;
+          width: 100px;
+          height: 60px;
         }
 
         .preview-frame.square {
-          width: 160px;
-          height: 160px;
-        }
-
-        .preview-frame::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(45deg, transparent 49%, rgba(255, 255, 255, 0.1) 50%, transparent 51%);
-          animation: shimmer 2s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
+          width: 80px;
+          height: 80px;
         }
 
         .preview-info {
-          text-align: center;
-          margin-top: 20px;
+          flex: 1;
+        }
+
+        .preview-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: white;
+          margin-bottom: 12px;
         }
 
         .preview-details {
-          display: flex;
-          justify-content: center;
-          gap: 30px;
-          margin-top: 15px;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
         }
 
         .preview-detail {
-          text-align: center;
+          text-align: left;
         }
 
         .preview-detail-label {
-          font-size: 12px;
+          font-size: 11px;
           color: rgba(255, 255, 255, 0.5);
           text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-bottom: 5px;
+          letter-spacing: 0.5px;
+          margin-bottom: 4px;
         }
 
         .preview-detail-value {
-          font-size: 16px;
+          font-size: 14px;
           color: white;
-          font-weight: 600;
+          font-weight: 500;
         }
 
         /* Responsive Design */
@@ -272,21 +190,18 @@ const OrientationSettings = ({ settings, onUpdate }) => {
             grid-template-columns: 1fr;
           }
 
-          .preview-details {
+          .preview-section {
             flex-direction: column;
-            gap: 15px;
+            text-align: center;
+          }
+
+          .preview-details {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            text-align: center;
           }
         }
       `}</style>
-
-      <div className="settings-description">
-        <h3>📱 Photo Orientation Configuration</h3>
-        <p>
-          Choose the orientation for captured photos. This setting affects both the camera preview 
-          and the final photo output. The orientation will determine how photos are displayed 
-          in the photo strip and affects the AI prompt processing.
-        </p>
-      </div>
 
       <div className="orientation-grid">
         {orientationOptions.map(option => (
@@ -296,10 +211,9 @@ const OrientationSettings = ({ settings, onUpdate }) => {
             onClick={() => handleOrientationChange(option.id)}
           >
             <div className="active-indicator">
-              <span style={{ color: 'white', fontSize: '12px' }}>✓</span>
+              <span style={{ color: 'white', fontSize: '10px' }}>✓</span>
             </div>
             
-            <span className="orientation-icon">{option.icon}</span>
             <h4 className="orientation-name">{option.name}</h4>
             <p className="orientation-description">{option.description}</p>
             <span className="orientation-dimensions">{option.dimensions}</span>
@@ -308,17 +222,12 @@ const OrientationSettings = ({ settings, onUpdate }) => {
       </div>
 
       <div className="preview-section">
-        <h3 className="preview-title">
-          👁️ Live Preview
-        </h3>
-        
-        <div className="preview-container">
-          <div className={`preview-frame ${settings.orientation}`}>
-            <span>Photo Preview</span>
-          </div>
+        <div className={`preview-frame ${settings.orientation}`}>
+          <span>Preview</span>
         </div>
-
+        
         <div className="preview-info">
+          <h3 className="preview-title">Live Preview</h3>
           <div className="preview-details">
             <div className="preview-detail">
               <div className="preview-detail-label">Selected</div>

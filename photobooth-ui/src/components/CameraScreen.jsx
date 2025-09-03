@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSettings } from '../context/SettingsContext';
 
 const CameraScreen = ({ onComplete }) => {
+  const { settings } = useSettings();
+  const [captureSettings, setCaptureSettings] = useState({});
   const [photoCount, setPhotoCount] = useState(0);
   const [countdown, setCountdown] = useState(null);
   const [currentPose, setCurrentPose] = useState('Get Ready');
   const [progress, setProgress] = useState(0);
   const [isFlashing, setIsFlashing] = useState(false);
-  const [completedPhotos, setCompletedPhotos] = useState([false, false, false]);
+  const [completedPhotos, setCompletedPhotos] = useState([]);
   const [isCapturing, setIsCapturing] = useState(false);
   const [stream, setStream] = useState(null);
   const [capturedImages, setCapturedImages] = useState([]);
@@ -21,23 +24,60 @@ const CameraScreen = ({ onComplete }) => {
     'Give us your biggest, brightest smile',
     'Be creative! Show your personality'
   ];
-  const successMessages = [
-    'Amazing! First photo captured ✨',
-    'Perfect! Second photo done 📸',
-    'Fantastic! All photos complete! 🎉'
-  ];
+  const getSuccessMessage = (photoIndex, totalPhotos) => {
+    if (photoIndex === 0) return 'Amazing! First photo captured ✨';
+    if (photoIndex === totalPhotos - 1) return 'Fantastic! All photos complete! 🎉';
+    return `Perfect! Photo ${photoIndex + 1} captured 📸`;
+  };
   const timeoutRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  // Fetch capture settings from API
+  useEffect(() => {
+    const fetchCaptureSettings = async () => {
+      try {
+        const response = await fetch('http://localhost:3002/api/admin/settings/capture');
+        const data = await response.json();
+        if (data.success) {
+          console.log('🎥 Fetched capture settings:', data.captureSettings);
+          setCaptureSettings(data.captureSettings);
+          // Initialize completedPhotos array based on dynamic photoCount
+          setCompletedPhotos(new Array(data.captureSettings.photoCount || 3).fill(false));
+        }
+      } catch (error) {
+        console.error('Error fetching capture settings:', error);
+        // Fallback to default settings
+        setCaptureSettings({
+          autoCapture: true,
+          countdownDuration: 3000,
+          captureInterval: 3000,
+          photoCount: 3,
+          captureSettings: {
+            flashEnabled: false,
+            soundEnabled: true,
+            previewTime: 2000,
+            retakeAllowed: true,
+            maxRetakes: 3
+          }
+        });
+        setCompletedPhotos(new Array(3).fill(false));
+      }
+    };
+    
+    fetchCaptureSettings();
+  }, []);
 
   useEffect(() => {
     // Initialize camera
     initCamera();
     
-    // Start automatic capture after 3 seconds (give camera time to load)
-    timeoutRef.current = setTimeout(() => {
-      startAutomaticCapture();
-    }, 3000);
+    // Start automatic capture after 3 seconds (give camera time to load) - use dynamic settings
+    if (captureSettings.autoCapture) {
+      timeoutRef.current = setTimeout(() => {
+        startAutomaticCapture();
+      }, 3000);
+    }
 
     return () => {
       if (timeoutRef.current) {
@@ -48,16 +88,37 @@ const CameraScreen = ({ onComplete }) => {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, []);
+  }, [captureSettings.autoCapture, settings.orientation, captureSettings]); // Re-initialize when settings change
 
   const initCamera = async () => {
     try {
+      // Dynamic camera constraints based on orientation setting
+      let videoConstraints = {
+        facingMode: 'user'
+      };
+
+      // Set dimensions based on orientation from settings
+      switch (settings.orientation) {
+        case 'portrait':
+          videoConstraints.width = { ideal: 720 };
+          videoConstraints.height = { ideal: 1280 };
+          break;
+        case 'landscape':
+          videoConstraints.width = { ideal: 1280 };
+          videoConstraints.height = { ideal: 720 };
+          break;
+        case 'square':
+          videoConstraints.width = { ideal: 1080 };
+          videoConstraints.height = { ideal: 1080 };
+          break;
+        default:
+          // Fallback to portrait
+          videoConstraints.width = { ideal: 720 };
+          videoConstraints.height = { ideal: 1280 };
+      }
+
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { 
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: 'user'
-        },
+        video: videoConstraints,
         audio: false
       });
       
@@ -76,21 +137,22 @@ const CameraScreen = ({ onComplete }) => {
     setStatusMessage('Starting your photo session...');
     await sleep(1000);
     
-    for (let i = 0; i < 3; i++) {
+    const totalPhotos = captureSettings.photoCount || 3;
+    for (let i = 0; i < totalPhotos; i++) {
       setCurrentPhotoIndex(i);
       
       // Transition to new photo
       setIsTransitioning(true);
-      setStatusMessage(`Photo ${i + 1} of 3`);
+      setStatusMessage(`Photo ${i + 1} of ${totalPhotos}`);
       await sleep(500);
       
       // Update pose and instruction
-      setCurrentPose(poses[i]);
-      setStatusMessage(instructions[i]);
+      setCurrentPose(poses[i % poses.length]); // Use modulo to cycle through poses
+      setStatusMessage(instructions[i % instructions.length]);
       setIsTransitioning(false);
       
-      // Wait for pose
-      await sleep(3000);
+      // Wait for pose (use dynamic captureInterval from database)
+      await sleep(captureSettings.captureInterval || 3000);
       
       // Pre-countdown message
       setStatusMessage('Get ready! Photo coming up...');
@@ -99,44 +161,64 @@ const CameraScreen = ({ onComplete }) => {
       // Start countdown
       await startCountdown();
       
-      // Capture photo
-      capturePhoto(i);
+      // Capture photo and wait for it to complete
+      await capturePhoto(i);
       
       // Show success message
       setIsTransitioning(true);
-      setStatusMessage(successMessages[i]);
+      setStatusMessage(getSuccessMessage(i, totalPhotos));
       
-      // Update progress
-      setProgress((i + 1) * 33);
+      // Update progress based on dynamic photo count
+      const progressPercentage = ((i + 1) / totalPhotos) * 100;
+      setProgress(progressPercentage);
       
-      await sleep(1500);
+      // Use dynamic preview time from settings
+      await sleep(captureSettings.captureSettings?.previewTime || 2000);
       
       // Wait before next photo (except for last one)
-      if (i < 2) {
+      if (i < totalPhotos - 1) {
         setStatusMessage('Preparing next photo...');
         await sleep(1500);
       }
     }
     
-    // All photos captured
+    // All photos captured - get latest captured images state
     setStatusMessage('All photos captured! Creating your photo strip...');
+    
+    // Wait a bit for state to update, then get the current images
     setTimeout(() => {
-      onComplete();
-    }, 2000);
+      setCapturedImages(currentImages => {
+        console.log('📷 All photos captured! Total images:', currentImages.length);
+        console.log('📷 Captured images:', currentImages);
+        
+        setTimeout(() => {
+          // Pass captured images to the next screen
+          console.log('🚀 Passing captured images to next screen:', currentImages.length, 'images');
+          onComplete(currentImages);
+        }, 1000);
+        
+        return currentImages; // Return the same images, we just needed to access them
+      });
+    }, 500);
   };
 
   const startCountdown = () => {
     return new Promise((resolve) => {
-      let count = 3;
+      // Use dynamic countdown duration from database (convert ms to seconds)
+      const countdownSeconds = Math.ceil((captureSettings.countdownDuration || 3000) / 1000);
+      console.log(`⏱️ Starting countdown: ${countdownSeconds} seconds (${captureSettings.countdownDuration}ms)`);
+      let count = countdownSeconds;
       setCountdown(count);
       
       const interval = setInterval(() => {
         count--;
+        console.log(`⏱️ Countdown: ${count}`);
         if (count > 0) {
           setCountdown(count);
         } else {
           clearInterval(interval);
           setCountdown(null);
+          console.log('⏱️ Countdown complete!');
           resolve();
         }
       }, 1000);
@@ -144,39 +226,71 @@ const CameraScreen = ({ onComplete }) => {
   };
 
   const capturePhoto = (photoIndex) => {
-    if (!videoRef.current || !canvasRef.current) return;
-    
-    // Flash effect
-    setIsFlashing(true);
-    setTimeout(() => setIsFlashing(false), 300);
-    
-    // Capture image from video
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    const context = canvas.getContext('2d');
-    
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    
-    // Draw current video frame to canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Convert to blob and store
-    canvas.toBlob((blob) => {
-      const imageUrl = URL.createObjectURL(blob);
-      setCapturedImages(prev => {
-        const newImages = [...prev];
-        newImages[photoIndex] = imageUrl;
-        return newImages;
-      });
-    }, 'image/jpeg', 0.8);
-    
-    // Mark photo as completed
-    const newCompleted = [...completedPhotos];
-    newCompleted[photoIndex] = true;
-    setCompletedPhotos(newCompleted);
-    setPhotoCount(photoIndex + 1);
+    return new Promise((resolve) => {
+      if (!videoRef.current || !canvasRef.current) {
+        resolve();
+        return;
+      }
+      
+      // Play camera sound if enabled
+      if (captureSettings.captureSettings?.soundEnabled) {
+        // Create camera click sound
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+      }
+      
+      // Flash effect if enabled
+      if (captureSettings.captureSettings?.flashEnabled) {
+        setIsFlashing(true);
+        setTimeout(() => setIsFlashing(false), 300);
+      }
+      
+      // Capture image from video
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      const context = canvas.getContext('2d');
+      
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      // Draw current video frame to canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Convert to blob and store
+      canvas.toBlob((blob) => {
+        const imageUrl = URL.createObjectURL(blob);
+        console.log(`📸 Photo ${photoIndex + 1} captured:`, imageUrl.substring(0, 50) + '...');
+        
+        setCapturedImages(prev => {
+          const newImages = [...prev];
+          newImages[photoIndex] = imageUrl;
+          console.log(`📸 Updated capturedImages array, length:`, newImages.length);
+          return newImages;
+        });
+        
+        // Mark photo as completed
+        const newCompleted = [...completedPhotos];
+        newCompleted[photoIndex] = true;
+        setCompletedPhotos(newCompleted);
+        setPhotoCount(photoIndex + 1);
+        
+        resolve(); // Resolve the promise after image is captured
+      }, 'image/jpeg', 0.8);
+    });
   };
 
   const sleep = (ms) => {
@@ -229,8 +343,6 @@ const CameraScreen = ({ onComplete }) => {
         }
 
         .camera-frame {
-          width: 600px;
-          height: 450px;
           border: 2px solid transparent;
           border-radius: 20px;
           position: relative;
@@ -239,6 +351,21 @@ const CameraScreen = ({ onComplete }) => {
           animation: borderGlow 3s ease-in-out infinite;
           transition: all 0.3s ease;
           overflow: hidden;
+        }
+
+        .camera-frame.portrait {
+          width: 450px;
+          height: 600px;
+        }
+
+        .camera-frame.landscape {
+          width: 600px;
+          height: 450px;
+        }
+
+        .camera-frame.square {
+          width: 500px;
+          height: 500px;
         }
 
         .camera-video {
@@ -532,11 +659,201 @@ const CameraScreen = ({ onComplete }) => {
           letter-spacing: 1px;
         }
 
+        /* Floating Background Particles */
+        .particle-container {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .particle {
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+          opacity: 0.6;
+        }
+
+        .particle-1 {
+          width: 25px;
+          height: 25px;
+          background: radial-gradient(circle, #FF0080, rgba(255, 0, 128, 0.3), transparent);
+          top: 20%;
+          left: 10%;
+          animation: floatUp1 15s linear infinite;
+        }
+
+        .particle-2 {
+          width: 20px;
+          height: 20px;
+          background: radial-gradient(circle, #7928CA, rgba(121, 40, 202, 0.3), transparent);
+          top: 40%;
+          left: 20%;
+          animation: floatUp2 18s linear infinite;
+        }
+
+        .particle-3 {
+          width: 30px;
+          height: 30px;
+          background: radial-gradient(circle, #46FF90, rgba(70, 255, 144, 0.3), transparent);
+          top: 60%;
+          left: 15%;
+          animation: floatUp3 12s linear infinite;
+        }
+
+        .particle-4 {
+          width: 18px;
+          height: 18px;
+          background: radial-gradient(circle, #46C3FF, rgba(70, 195, 255, 0.3), transparent);
+          top: 80%;
+          left: 25%;
+          animation: floatUp4 20s linear infinite;
+        }
+
+        .particle-5 {
+          width: 22px;
+          height: 22px;
+          background: radial-gradient(circle, #FF0080, rgba(255, 0, 128, 0.3), transparent);
+          top: 30%;
+          right: 10%;
+          animation: floatUp5 16s linear infinite;
+        }
+
+        .particle-6 {
+          width: 28px;
+          height: 28px;
+          background: radial-gradient(circle, #7928CA, rgba(121, 40, 202, 0.3), transparent);
+          top: 50%;
+          right: 20%;
+          animation: floatUp6 14s linear infinite;
+        }
+
+        .particle-7 {
+          width: 16px;
+          height: 16px;
+          background: radial-gradient(circle, #46FF90, rgba(70, 255, 144, 0.3), transparent);
+          top: 70%;
+          right: 15%;
+          animation: floatUp7 22s linear infinite;
+        }
+
+        .particle-8 {
+          width: 24px;
+          height: 24px;
+          background: radial-gradient(circle, #46C3FF, rgba(70, 195, 255, 0.3), transparent);
+          top: 90%;
+          right: 30%;
+          animation: floatUp8 19s linear infinite;
+        }
+
+        .particle-9 {
+          width: 26px;
+          height: 26px;
+          background: radial-gradient(circle, #FF0080, rgba(255, 0, 128, 0.3), transparent);
+          top: 15%;
+          left: 50%;
+          animation: floatUp9 17s linear infinite;
+        }
+
+        .particle-10 {
+          width: 19px;
+          height: 19px;
+          background: radial-gradient(circle, #7928CA, rgba(121, 40, 202, 0.3), transparent);
+          top: 85%;
+          left: 60%;
+          animation: floatUp10 13s linear infinite;
+        }
+
+        @keyframes floatUp1 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(20px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes floatUp2 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(-15px) rotate(-360deg); opacity: 0; }
+        }
+
+        @keyframes floatUp3 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(30px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes floatUp4 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(-10px) rotate(-360deg); opacity: 0; }
+        }
+
+        @keyframes floatUp5 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(-25px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes floatUp6 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(15px) rotate(-360deg); opacity: 0; }
+        }
+
+        @keyframes floatUp7 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(-20px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes floatUp8 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(25px) rotate(-360deg); opacity: 0; }
+        }
+
+        @keyframes floatUp9 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(-30px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes floatUp10 {
+          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-100px) translateX(10px) rotate(-360deg); opacity: 0; }
+        }
+
+
         /* Responsive Design */
         @media (max-width: 1024px) {
-          .camera-frame {
+          .camera-frame.portrait {
+            width: 375px;
+            height: 500px;
+          }
+          
+          .camera-frame.landscape {
             width: 500px;
             height: 375px;
+          }
+          
+          .camera-frame.square {
+            width: 400px;
+            height: 400px;
           }
           
           .camera-sidebar {
@@ -557,15 +874,24 @@ const CameraScreen = ({ onComplete }) => {
             border-top: 1px solid rgba(255, 255, 255, 0.1);
           }
           
-          .camera-frame {
+          .camera-frame.portrait {
+            width: 90%;
+            max-width: 300px;
+            height: 400px;
+          }
+          
+          .camera-frame.landscape {
             width: 90%;
             max-width: 400px;
             height: 300px;
           }
           
-          .countdown-display {
-            font-size: 120px;
+          .camera-frame.square {
+            width: 90%;
+            max-width: 350px;
+            height: 350px;
           }
+          
         }
       `}</style>
 
@@ -573,8 +899,22 @@ const CameraScreen = ({ onComplete }) => {
         <div className="progress-fill" style={{ width: `${progress}%` }}></div>
       </div>
 
+      {/* Floating Background Particles */}
+      <div className="particle-container">
+        <div className="particle particle-1"></div>
+        <div className="particle particle-2"></div>
+        <div className="particle particle-3"></div>
+        <div className="particle particle-4"></div>
+        <div className="particle particle-5"></div>
+        <div className="particle particle-6"></div>
+        <div className="particle particle-7"></div>
+        <div className="particle particle-8"></div>
+        <div className="particle particle-9"></div>
+        <div className="particle particle-10"></div>
+      </div>
+
       <div className="camera-main">
-        <div className={`camera-frame ${isFlashing ? 'flash' : ''}`}>
+        <div className={`camera-frame ${settings.orientation || 'portrait'} ${isFlashing ? 'flash' : ''}`}>
           {stream && !cameraError ? (
             <video 
               ref={videoRef}
@@ -595,18 +935,21 @@ const CameraScreen = ({ onComplete }) => {
             <div className="corner bottom-left"></div>
             <div className="corner bottom-right"></div>
           </div>
-          
           {countdown ? (
-            <div className="countdown-display">{countdown}</div>
-          ) : (
-            <div className={`pose-indicator ${isTransitioning ? 'transitioning' : ''}`}>
-              {currentPose}
+            <div className="countdown-display" style={{ 
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              fontSize: '120px',
+              fontWeight: 'bold',
+              color: '#FF0080',
+              textShadow: '0 0 20px rgba(255, 0, 128, 0.8)',
+              zIndex: 1000
+            }}>
+              {countdown}
             </div>
-          )}
-          
-          <div className={`status-message ${isTransitioning ? 'transitioning' : ''}`}>
-            {statusMessage}
-          </div>
+          ) : null}
         </div>
         
         {/* Hidden canvas for image capture */}
@@ -621,29 +964,19 @@ const CameraScreen = ({ onComplete }) => {
         <div className="photo-status">
           <div className="status-title">Photo Progress</div>
           
-          <div className={`photo-item ${completedPhotos[0] ? 'completed' : ''} ${currentPhotoIndex === 0 && isCapturing ? 'active' : ''}`}>
-            <div className="photo-number">1</div>
-            <div className="photo-label">First Shot</div>
-            <svg className="check-icon" viewBox="0 0 24 24" fill="#46ff90">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-            </svg>
-          </div>
-
-          <div className={`photo-item ${completedPhotos[1] ? 'completed' : ''} ${currentPhotoIndex === 1 && isCapturing ? 'active' : ''}`}>
-            <div className="photo-number">2</div>
-            <div className="photo-label">Second Shot</div>
-            <svg className="check-icon" viewBox="0 0 24 24" fill="#46ff90">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-            </svg>
-          </div>
-
-          <div className={`photo-item ${completedPhotos[2] ? 'completed' : ''} ${currentPhotoIndex === 2 && isCapturing ? 'active' : ''}`}>
-            <div className="photo-number">3</div>
-            <div className="photo-label">Final Shot</div>
-            <svg className="check-icon" viewBox="0 0 24 24" fill="#46ff90">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-            </svg>
-          </div>
+          {completedPhotos.map((isCompleted, index) => (
+            <div key={index} className={`photo-item ${isCompleted ? 'completed' : ''} ${currentPhotoIndex === index && isCapturing ? 'active' : ''}`}>
+              <div className="photo-number">{index + 1}</div>
+              <div className="photo-label">
+                {index === 0 ? 'First Shot' : 
+                 index === completedPhotos.length - 1 ? 'Final Shot' : 
+                 `Shot ${index + 1}`}
+              </div>
+              <svg className="check-icon" viewBox="0 0 24 24" fill="#46ff90">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+              </svg>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -1,25 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useSettings } from '../../context/SettingsContext';
 import AdminLogin from './AdminLogin';
 import OrientationSettings from './OrientationSettings';
 import EffectsManager from './EffectsManager';
 import CaptureSettings from './CaptureSettings';
 import PreviewSettings from './PreviewSettings';
 
-const AdminPanel = () => {
+const AdminPanel = ({ isOverlay = false, onClose }) => {
+  const { settings, saveSettings, updateSetting, loadSettings } = useSettings();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('orientation');
-  const [settings, setSettings] = useState({
-    orientation: 'portrait',
-    effects: [
-      { id: 'normal', name: 'Normal', prompt: '', enabled: true },
-      { id: 'vintage', name: 'Vintage', prompt: 'vintage style, sepia tone', enabled: true },
-      { id: 'bw', name: 'Black & White', prompt: 'black and white, artistic', enabled: true },
-      { id: 'vivid', name: 'Vivid Colors', prompt: 'vibrant colors, saturated', enabled: true }
-    ],
-    autoCapture: true,
-    captureInterval: 3000,
-    photoCount: 3
-  });
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState('');
 
@@ -32,56 +22,28 @@ const AdminPanel = () => {
     }
   }, []);
 
-  const loadSettings = async () => {
-    try {
-      const response = await fetch('http://localhost:3002/api/admin/settings');
-      const data = await response.json();
-      if (data.success) {
-        setSettings(data.settings);
-      }
-    } catch (error) {
-      console.error('Failed to load settings:', error);
-    }
-  };
-
-  const saveSettings = async () => {
+  const handleSaveSettings = async () => {
     setIsSaving(true);
     setSaveStatus('');
     
-    try {
-      const response = await fetch('http://localhost:3002/api/admin/settings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(settings)
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        setSaveStatus('Settings saved successfully!');
-        setTimeout(() => setSaveStatus(''), 3000);
-      } else {
-        setSaveStatus('Failed to save settings');
-      }
-    } catch (error) {
-      console.error('Failed to save settings:', error);
-      setSaveStatus('Error saving settings');
-    } finally {
-      setIsSaving(false);
+    const result = await saveSettings(settings);
+    
+    if (result.success) {
+      setSaveStatus('Settings saved successfully!');
+      setTimeout(() => setSaveStatus(''), 3000);
+    } else {
+      setSaveStatus(result.message || 'Failed to save settings');
     }
+    
+    setIsSaving(false);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     setIsAuthenticated(false);
-  };
-
-  const updateSettings = (key, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
+    if (isOverlay && onClose) {
+      onClose();
+    }
   };
 
   if (!isAuthenticated) {
@@ -89,10 +51,10 @@ const AdminPanel = () => {
   }
 
   const tabs = [
-    { id: 'orientation', name: 'Orientation', icon: '📱' },
-    { id: 'effects', name: 'Effects & Prompts', icon: '🎨' },
-    { id: 'capture', name: 'Capture Settings', icon: '📸' },
-    { id: 'preview', name: 'Preview', icon: '👁️' }
+    { id: 'orientation', name: 'Orientation' },
+    { id: 'effects', name: 'Effects & Prompts' },
+    { id: 'capture', name: 'Capture Settings' },
+    { id: 'preview', name: 'Preview' }
   ];
 
   return (
@@ -105,95 +67,156 @@ const AdminPanel = () => {
         }
 
         .admin-container {
-          min-height: 100vh;
-          background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          ${isOverlay ? 'height: 100%;' : 'min-height: 100vh;'}
+          background: ${isOverlay ? 'transparent' : 'linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%)'};
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           color: white;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
         }
 
         .admin-header {
-          background: rgba(0, 0, 0, 0.3);
-          backdrop-filter: blur(10px);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          padding: 20px 30px;
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          padding: 20px 24px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          position: sticky;
-          top: 0;
-          z-index: 100;
+          flex-shrink: 0;
+          position: relative;
+        }
+
+        .admin-header::before {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(255, 0, 128, 0.3), rgba(121, 40, 202, 0.3), rgba(70, 195, 255, 0.3), transparent);
+        }
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 16px;
         }
 
         .admin-title {
-          font-size: 28px;
-          font-weight: 300;
-          background: linear-gradient(135deg, #FF0080, #7928CA);
+          font-size: 20px;
+          font-weight: 700;
+          background: linear-gradient(135deg, #FF0080, #7928CA, #46C3FF);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
-          display: flex;
-          align-items: center;
-          gap: 15px;
+          letter-spacing: -0.5px;
         }
 
-        .admin-logo {
-          width: 40px;
-          height: 40px;
+        .admin-subtitle {
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.5);
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         .admin-actions {
           display: flex;
           align-items: center;
-          gap: 20px;
+          gap: 16px;
+        }
+
+        .shortcut-hint {
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.4);
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          padding: 6px 12px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 20px;
+        }
+
+        .close-btn {
+          background: rgba(255, 255, 255, 0.06);
+          color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          padding: 8px;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 16px;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .close-btn:hover {
+          background: rgba(255, 70, 70, 0.15);
+          color: #ff6b6b;
+          border-color: rgba(255, 70, 70, 0.3);
+          transform: translateY(-1px);
         }
 
         .save-btn {
           background: linear-gradient(135deg, #46ff90, #25D366);
           color: white;
           border: none;
-          padding: 12px 30px;
-          border-radius: 25px;
+          padding: 10px 18px;
+          border-radius: 12px;
           font-weight: 600;
+          font-size: 13px;
           cursor: pointer;
           transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          gap: 10px;
+          box-shadow: 0 2px 8px rgba(70, 255, 144, 0.2);
         }
 
         .save-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(70, 255, 144, 0.3);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(70, 255, 144, 0.35);
         }
 
         .save-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
+          transform: none;
+          box-shadow: 0 2px 8px rgba(70, 255, 144, 0.1);
         }
 
         .logout-btn {
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          padding: 10px 20px;
-          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.06);
+          color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          padding: 10px 16px;
+          border-radius: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
+          font-size: 13px;
+          font-weight: 500;
         }
 
         .logout-btn:hover {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(255, 70, 70, 0.15);
+          color: #ff6b6b;
+          border-color: rgba(255, 70, 70, 0.3);
+          transform: translateY(-1px);
         }
 
         .status-message {
           padding: 8px 16px;
-          border-radius: 20px;
-          font-size: 14px;
-          font-weight: 500;
-          background: rgba(70, 255, 144, 0.2);
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 600;
+          background: rgba(70, 255, 144, 0.15);
           color: #46ff90;
           border: 1px solid rgba(70, 255, 144, 0.3);
           animation: slideIn 0.3s ease;
+          box-shadow: 0 4px 12px rgba(70, 255, 144, 0.2);
         }
 
         @keyframes slideIn {
@@ -202,218 +225,172 @@ const AdminPanel = () => {
         }
 
         .admin-content {
+          flex: 1;
           display: flex;
-          height: calc(100vh - 80px);
+          flex-direction: column;
+          overflow: hidden;
         }
 
-        .admin-sidebar {
-          width: 280px;
+        .admin-tabs {
+          display: flex;
           background: rgba(0, 0, 0, 0.2);
-          backdrop-filter: blur(10px);
-          border-right: 1px solid rgba(255, 255, 255, 0.1);
-          padding: 30px 0;
-        }
-
-        .tab-list {
-          list-style: none;
-        }
-
-        .tab-item {
-          margin-bottom: 8px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          flex-shrink: 0;
         }
 
         .tab-button {
-          width: 100%;
+          flex: 1;
           background: transparent;
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.6);
           border: none;
-          padding: 18px 30px;
-          text-align: left;
-          font-size: 16px;
+          padding: 16px 20px;
+          font-size: 14px;
+          font-weight: 500;
           cursor: pointer;
           transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          gap: 15px;
-          border-radius: 0;
+          position: relative;
+          border-bottom: 2px solid transparent;
         }
 
         .tab-button:hover {
           background: rgba(255, 255, 255, 0.05);
-          color: white;
+          color: rgba(255, 255, 255, 0.8);
         }
 
         .tab-button.active {
-          background: linear-gradient(135deg, rgba(255, 0, 128, 0.2), rgba(121, 40, 202, 0.2));
+          background: rgba(255, 0, 128, 0.1);
           color: white;
-          border-right: 3px solid #FF0080;
+          border-bottom-color: #FF0080;
         }
 
-        .tab-icon {
-          font-size: 20px;
+        .tab-button.active::after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, #FF0080, #7928CA);
         }
 
         .admin-main {
           flex: 1;
-          padding: 40px;
+          padding: 24px;
           overflow-y: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
         }
 
-        .section-title {
-          font-size: 24px;
-          margin-bottom: 30px;
-          font-weight: 300;
-          color: white;
+        .admin-main::-webkit-scrollbar {
+          display: none;
+        }
+
+        .section-content {
+          height: 100%;
           display: flex;
-          align-items: center;
-          gap: 15px;
-        }
-
-        .section-title::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: linear-gradient(90deg, rgba(255, 0, 128, 0.3), transparent);
+          flex-direction: column;
+          gap: 20px;
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-          .admin-content {
+          .admin-header {
+            padding: 12px 16px;
             flex-direction: column;
+            gap: 12px;
           }
 
-          .admin-sidebar {
-            width: 100%;
-            height: auto;
-            padding: 20px 0;
-          }
-
-          .tab-list {
-            display: flex;
+          .admin-tabs {
             overflow-x: auto;
-            padding: 0 20px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
           }
 
-          .tab-item {
-            margin-bottom: 0;
-            margin-right: 10px;
-            min-width: 150px;
+          .admin-tabs::-webkit-scrollbar {
+            display: none;
+          }
+
+          .tab-button {
+            min-width: 120px;
+            padding: 12px 16px;
+            font-size: 13px;
           }
 
           .admin-main {
-            padding: 20px;
-          }
-
-          .admin-header {
-            padding: 15px 20px;
-            flex-direction: column;
-            gap: 15px;
-          }
-
-          .admin-actions {
-            width: 100%;
-            justify-content: center;
+            padding: 16px;
           }
         }
       `}</style>
 
       <div className="admin-header">
-        <div className="admin-title">
-          <svg className="admin-logo" viewBox="0 0 100 100">
-            <circle cx="50" cy="35" r="15" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-            <circle cx="50" cy="50" r="12" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-            <circle cx="45" cy="33" r="2" fill="white"/>
-            <circle cx="55" cy="33" r="2" fill="white"/>
-            <circle cx="45" cy="33" r="1.5" fill="black"/>
-            <circle cx="55" cy="33" r="1.5" fill="black"/>
-            <path d="M 43 38 Q 50 41 57 38" stroke="black" strokeWidth="1.5" fill="none"/>
-            <path d="M 38 48 Q 28 45 25 52" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-            <path d="M 62 48 Q 72 45 75 52" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-            <path d="M 43 58 L 40 68" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M 57 58 L 60 68" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M 38 54 Q 20 54 18 62" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-            <path d="M 15 80 Q 50 70 85 80" stroke="#FFD700" strokeWidth="5" fill="none" strokeLinecap="round"/>
-          </svg>
-          SkyJumper Admin Panel
+        <div className="header-left">
+          <div>
+            <div className="admin-title">SkyJumper Admin</div>
+            <div className="admin-subtitle">Configuration Panel</div>
+          </div>
         </div>
         
         <div className="admin-actions">
           {saveStatus && <div className="status-message">{saveStatus}</div>}
+          {isOverlay && <div className="shortcut-hint">Ctrl+Shift+A</div>}
           <button 
             className="save-btn"
-            onClick={saveSettings}
+            onClick={handleSaveSettings}
             disabled={isSaving}
           >
-            {isSaving ? '💾 Saving...' : '💾 Save Settings'}
+            {isSaving ? 'Saving...' : 'Save Settings'}
           </button>
           <button className="logout-btn" onClick={handleLogout}>
-            🚪 Logout
+            Logout
           </button>
+          {isOverlay && onClose && (
+            <button className="close-btn" onClick={onClose}>
+              ✕
+            </button>
+          )}
         </div>
       </div>
 
       <div className="admin-content">
-        <div className="admin-sidebar">
-          <ul className="tab-list">
-            {tabs.map(tab => (
-              <li key={tab.id} className="tab-item">
-                <button
-                  className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
-                >
-                  <span className="tab-icon">{tab.icon}</span>
-                  {tab.name}
-                </button>
-              </li>
-            ))}
-          </ul>
+        <div className="admin-tabs">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.name}
+            </button>
+          ))}
         </div>
 
         <div className="admin-main">
-          {activeTab === 'orientation' && (
-            <>
-              <h2 className="section-title">
-                📱 Photo Orientation Settings
-              </h2>
+          <div className="section-content">
+            {activeTab === 'orientation' && (
               <OrientationSettings 
                 settings={settings}
-                onUpdate={updateSettings}
+                onUpdate={updateSetting}
               />
-            </>
-          )}
+            )}
 
-          {activeTab === 'effects' && (
-            <>
-              <h2 className="section-title">
-                🎨 Effects & AI Prompts Management
-              </h2>
+            {activeTab === 'effects' && (
               <EffectsManager 
                 settings={settings}
-                onUpdate={updateSettings}
+                onUpdate={updateSetting}
               />
-            </>
-          )}
+            )}
 
-          {activeTab === 'capture' && (
-            <>
-              <h2 className="section-title">
-                📸 Photo Capture Settings
-              </h2>
+            {activeTab === 'capture' && (
               <CaptureSettings 
                 settings={settings}
-                onUpdate={updateSettings}
+                onUpdate={updateSetting}
               />
-            </>
-          )}
+            )}
 
-          {activeTab === 'preview' && (
-            <>
-              <h2 className="section-title">
-                👁️ Settings Preview
-              </h2>
+            {activeTab === 'preview' && (
               <PreviewSettings settings={settings} />
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
