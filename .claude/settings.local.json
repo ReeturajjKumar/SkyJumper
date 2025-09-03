@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(tree:*)",
+      "Bash(npm start)",
+      "Bash(taskkill:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm start:*)",
+      "Read(C:\\Users\\Bamigos\\Desktop/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
