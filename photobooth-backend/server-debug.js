@@ -1,87 +1,22 @@
+// Debug version of server.js with enhanced logging - Run on port 3003
 const express = require('express');
-const mongoose = require('mongoose');
 require('dotenv').config();
 
-// Add fetch polyfill for Node.js versions that don't have it built-in
 if (!global.fetch) {
   global.fetch = require('node-fetch');
 }
 
-// Import middleware
 const corsMiddleware = require('./middleware/cors');
-const logger = require('./middleware/logger');
-const { errorHandler, notFound } = require('./middleware/errorHandler');
-
-// Import routes
-const settingsRoutes = require('./routes/settings');
-const authRoutes = require('./routes/auth');
-const predefinedEffectsRoutes = require('./routes/predefinedEffects');
-const imageRoutes = require('./routes/images');
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = 3003; // Different port to avoid conflicts
 
-// MongoDB Connection
-console.log('🔄 Connecting to MongoDB...');
-mongoose.connect(process.env.MONGODB_URI, {
-  serverSelectionTimeoutMS: 30000,
-  socketTimeoutMS: 45000,
-  maxPoolSize: 10,
-  retryWrites: true,
-  w: 'majority'
-})
-  .then(() => {
-    console.log('✅ Connected to MongoDB Atlas successfully');
-    console.log('🗄️  Database: SkyJumper');
-  })
-  .catch(err => {
-    console.error('❌ MongoDB connection failed:', err.message);
-    console.error('📋 Please check:');
-    console.error('   - Internet connection');
-    console.error('   - MongoDB Atlas cluster status');
-    console.error('   - Database credentials in .env file');
-    process.exit(1);
-  });
-
-// Connection event handlers
-mongoose.connection.on('error', err => {
-  console.error('❌ MongoDB connection error:', err);
-});
-
-mongoose.connection.on('disconnected', () => {
-  console.log('🔌 MongoDB disconnected');
-});
-
-mongoose.connection.on('reconnected', () => {
-  console.log('🔄 MongoDB reconnected');
-});
-
-// Middleware
-app.use(logger); // Request logging
-app.use(corsMiddleware); // CORS configuration
+// Basic middleware
+app.use(corsMiddleware);
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Health check route
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    uptime: process.uptime()
-  });
-});
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/admin/settings', settingsRoutes);
-app.use('/api/predefined-effects', predefinedEffectsRoutes);
-app.use('/api/images', imageRoutes);
-
-// Legacy route mapping for backward compatibility
-app.get('/api/camera/orientation', settingsRoutes);
-
-// Black Forest Labs API integration - Production implementation
+// Black Forest Labs API integration with enhanced logging
 app.post('/api/apply-effect', async (req, res) => {
   try {
     const { input_image, prompt, prompt_upsampling, output_format, aspect_ratio } = req.body;
@@ -107,32 +42,37 @@ app.post('/api/apply-effect', async (req, res) => {
         // Decode base64 and read JPEG dimensions from header
         const imageBuffer = Buffer.from(input_image, 'base64');
         
+        console.log('📊 Raw image buffer size:', imageBuffer.length, 'bytes');
+        
         // Simple JPEG dimension detection
         let width, height;
         
         // Look for JPEG SOF (Start of Frame) markers
         for (let i = 0; i < imageBuffer.length - 8; i++) {
-          if (imageBuffer[i] === 0xFF && imageBuffer[i + 1] === 0xC0) {
-            // Found SOF0 marker
+          if (imageBuffer[i] === 0xFF && (imageBuffer[i + 1] === 0xC0 || imageBuffer[i + 1] === 0xC2)) {
+            // Found SOF0 or SOF2 marker
             height = (imageBuffer[i + 5] << 8) | imageBuffer[i + 6];
             width = (imageBuffer[i + 7] << 8) | imageBuffer[i + 8];
+            console.log('✅ Found JPEG dimensions in header at position:', i);
             break;
           }
         }
         
         if (width && height) {
-          console.log('📐 Image dimensions:', width, 'x', height);
+          console.log('📐 DETECTED IMAGE DIMENSIONS:', width, 'x', height);
+          console.log('📊 Aspect ratio calculation:', width / height);
           
           // Determine aspect ratio based on image dimensions
           if (width > height) {
             detectedAspectRatio = '3:2'; // Landscape
-            console.log('📐 Detected: Landscape orientation, using aspect ratio 3:2');
+            console.log('📐 ✅ DETECTED: LANDSCAPE orientation, using aspect ratio 3:2');
           } else {
-            detectedAspectRatio = '2:3'; // Portrait
-            console.log('📐 Detected: Portrait orientation, using aspect ratio 2:3');
+            detectedAspectRatio = '2:3'; // Portrait  
+            console.log('📐 ✅ DETECTED: PORTRAIT orientation, using aspect ratio 2:3');
           }
         } else {
           console.warn('⚠️ Could not parse image dimensions from JPEG header');
+          console.log('🔍 First 20 bytes of image:', Array.from(imageBuffer.slice(0, 20)).map(b => '0x' + b.toString(16).padStart(2, '0')).join(' '));
         }
       } catch (error) {
         console.warn('⚠️ Could not detect image dimensions, using default aspect ratio:', error.message);
@@ -147,18 +87,19 @@ app.post('/api/apply-effect', async (req, res) => {
     
     const requestBody = {
       prompt: prompt,
-      input_image: input_image, // Base64 image for img2img transformation
+      input_image: input_image,
       prompt_upsampling: prompt_upsampling || false,
       output_format: output_format || 'jpeg',
       aspect_ratio: detectedAspectRatio
     };
     
-    console.log('📦 Request body:', {
+    console.log('📦 FINAL Request body:', {
       prompt: requestBody.prompt,
       hasImage: !!requestBody.input_image,
       imageLength: requestBody.input_image?.length || 'N/A',
       output_format: requestBody.output_format,
-      aspect_ratio: requestBody.aspect_ratio
+      aspect_ratio: requestBody.aspect_ratio,
+      prompt_upsampling: requestBody.prompt_upsampling
     });
     
     const response = await fetch(apiUrl, {
@@ -199,14 +140,12 @@ app.post('/api/apply-effect', async (req, res) => {
   }
 });
 
-
 app.get('/api/get-result', async (req, res) => {
   try {
     const { id } = req.query;
     
     console.log('🔍 Getting result for ID:', id);
     
-    // Check if API key is configured
     const apiKey = process.env.BLACK_FOREST_API_KEY;
     if (!apiKey) {
       console.error('❌ BLACK_FOREST_API_KEY not configured in environment');
@@ -222,7 +161,6 @@ app.get('/api/get-result', async (req, res) => {
     
     console.log('🔗 Using polling URL:', pollingUrl);
     
-    // Get the task result from Black Forest Labs API
     const response = await fetch(pollingUrl, {
       method: 'GET',
       headers: {
@@ -246,11 +184,12 @@ app.get('/api/get-result', async (req, res) => {
     if (data.status === 'Ready' && data.result) {
       console.log('✅ Result ready, fetching image from:', data.result.sample);
       
-      // Fetch the actual image from the signed URL
       const imageResponse = await fetch(data.result.sample);
       
       if (imageResponse.ok) {
         const imageBuffer = await imageResponse.arrayBuffer();
+        console.log('📊 Final processed image size:', imageBuffer.byteLength, 'bytes');
+        
         res.set('Content-Type', imageResponse.headers.get('content-type') || 'image/jpeg');
         res.send(Buffer.from(imageBuffer));
         console.log('✅ Image fetched and sent successfully');
@@ -262,7 +201,6 @@ app.get('/api/get-result', async (req, res) => {
         });
       }
     } else {
-      // Task is still processing or failed
       res.json({
         status: data.status,
         id: id,
@@ -278,35 +216,9 @@ app.get('/api/get-result', async (req, res) => {
   }
 });
 
-// Error handling middleware (must be last)
-app.use(notFound); // 404 handler
-app.use(errorHandler); // Global error handler
-
-// Start server
+// Start server on different port
 app.listen(PORT, () => {
-  console.log('🚀 Server running on port', PORT);
-  console.log('🗄️  Using MongoDB for settings storage');
-  console.log('📁 MVC structure initialized');
-  console.log('🌐 API endpoints:');
-  console.log('   GET  /health - Health check');
-  console.log('   GET  /api/admin/settings - Get settings');
-  console.log('   POST /api/admin/settings - Save settings');
-  console.log('   POST /api/auth/admin/login - Admin login');
-  console.log('   GET  /api/camera/orientation - Camera orientation');
-  console.log('   GET  /api/predefined-effects - Get predefined effects');
-  console.log('   POST /api/predefined-effects/seed - Seed default effects');
-});
-
-// Graceful shutdown
-process.on('SIGINT', async () => {
-  console.log('\n🔄 Gracefully shutting down...');
-  
-  try {
-    await mongoose.connection.close();
-    console.log('✅ MongoDB connection closed');
-    process.exit(0);
-  } catch (error) {
-    console.error('❌ Error during shutdown:', error);
-    process.exit(1);
-  }
+  console.log('🚀 DEBUG Server running on port', PORT);
+  console.log('🔍 Enhanced logging enabled for image processing');
+  console.log('📐 Aspect ratio detection active');
 });

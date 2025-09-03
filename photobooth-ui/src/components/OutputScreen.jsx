@@ -1,5 +1,65 @@
 import React, { useState, useEffect } from 'react';
 
+// Smart Image Container that adapts to image orientation
+const ImageContainer = ({ imageSrc, index, effectName }) => {
+  const [imageOrientation, setImageOrientation] = useState('unknown');
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const detectOrientation = (imgElement) => {
+    const { naturalWidth, naturalHeight } = imgElement;
+    const orientation = naturalWidth > naturalHeight ? 'landscape' : 'portrait';
+    console.log(`📐 Image ${index + 1} orientation: ${orientation} (${naturalWidth} x ${naturalHeight})`);
+    setImageOrientation(orientation);
+    setIsLoaded(true);
+  };
+
+  return (
+    <div className={`strip-photo ${imageOrientation}`}>
+      {imageSrc ? (
+        <>
+          <img 
+            src={imageSrc} 
+            alt={`Photo ${index + 1}`}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: imageOrientation === 'landscape' ? 'contain' : 'cover',
+              borderRadius: '15px',
+              backgroundColor: imageOrientation === 'landscape' ? 'rgba(0,0,0,0.1)' : 'transparent'
+            }}
+            onError={(e) => {
+              console.error(`❌ Failed to load image ${index + 1}:`, imageSrc);
+              e.target.style.display = 'none';
+            }}
+            onLoad={(e) => {
+              console.log(`✅ Successfully loaded image ${index + 1}`);
+              detectOrientation(e.target);
+            }}
+          />
+          <span className="photo-number">{index + 1}</span>
+          {effectName !== 'Original Photo' && (
+            <span className="effect-name">{effectName}</span>
+          )}
+        </>
+      ) : (
+        <div style={{
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(45deg, #FF0080, #7928CA)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '60px',
+          borderRadius: '15px'
+        }}>
+          📸
+        </div>
+      )}
+    </div>
+  );
+};
+
 const OutputScreen = ({ capturedImages, onComplete }) => {
   const [isPrinting, setIsPrinting] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
@@ -8,15 +68,33 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
   useEffect(() => {
     console.log('📷 OutputScreen received capturedImages:', capturedImages);
     console.log('📷 Number of images:', capturedImages?.length || 0);
+    
     if (capturedImages && capturedImages.length > 0) {
       capturedImages.forEach((img, index) => {
-        console.log(`📷 Image ${index}:`, {
+        console.log(`📷 Final Image ${index + 1}:`, {
           hasProcessed: !!img.processed,
           hasOriginal: !!img.original,
           hasEffect: !!img.effect,
           effectName: img.effect?.name,
           isString: typeof img === 'string'
         });
+        
+        // Log actual image dimensions for processed and original
+        if (img.processed) {
+          const processedImg = new Image();
+          processedImg.onload = () => {
+            console.log(`   ✅ Final processed ${index + 1}: ${processedImg.width} x ${processedImg.height} (${processedImg.width > processedImg.height ? 'LANDSCAPE' : 'PORTRAIT'})`);
+          };
+          processedImg.src = img.processed;
+        }
+        
+        if (img.original) {
+          const originalImg = new Image();
+          originalImg.onload = () => {
+            console.log(`   📂 Final original ${index + 1}: ${originalImg.width} x ${originalImg.height} (${originalImg.width > originalImg.height ? 'LANDSCAPE' : 'PORTRAIT'})`);
+          };
+          originalImg.src = img.original;
+        }
       });
     }
   }, [capturedImages]);
@@ -130,7 +208,8 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
         }
 
         .photo-strip-container {
-          width: 1000px;
+          width: 1050px; /* Reduced width for better proportions */
+          max-width: 95vw; /* Ensure it doesn't exceed viewport width */
           margin: 0 auto;
           background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 50%, rgba(240, 147, 251, 0.3) 100%);
           border-radius: 15px;
@@ -184,6 +263,20 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
           overflow: hidden;
           box-shadow: 0 8px 25px rgba(0,0,0,0.2);
           transition: transform 0.3s ease;
+        }
+
+        /* Landscape images - make them more square to show all people */
+        .strip-photo.landscape {
+          height: 280px; /* Shorter height for landscape images */
+          width: 350px; /* Reduced width to fit better */
+          flex: 0 0 350px; /* Don't flex, maintain fixed width */
+          margin: 0 5px; /* Reduced spacing */
+        }
+
+        /* Portrait images - keep original tall format */
+        .strip-photo.portrait {
+          height: 350px; /* Keep original height for portrait */
+          flex: 1; /* Allow to flex normally */
         }
 
         .strip-photo:hover {
@@ -484,6 +577,20 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
             height: 220px;
           }
 
+          /* Mobile landscape images - make them responsive and square */
+          .strip-photo.landscape {
+            height: 180px;
+            width: 100%;
+            flex: 0 0 180px;
+            margin: 0;
+          }
+
+          /* Mobile portrait images */
+          .strip-photo.portrait {
+            height: 220px;
+            width: 100%;
+          }
+
           .print-btn {
             padding: 20px 60px;
             font-size: 18px;
@@ -560,44 +667,12 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
                 });
                 
                 return (
-                  <div key={index} className="strip-photo">
-                    {imageSrc ? (
-                      <img 
-                        src={imageSrc} 
-                        alt={`Photo ${index + 1}`}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          borderRadius: '15px'
-                        }}
-                        onError={(e) => {
-                          console.error(`❌ Failed to load image ${index + 1}:`, imageSrc);
-                          e.target.style.display = 'none';
-                        }}
-                        onLoad={() => {
-                          console.log(`✅ Successfully loaded image ${index + 1}`);
-                        }}
-                      />
-                    ) : (
-                      <div style={{
-                        width: '100%',
-                        height: '100%',
-                        background: 'linear-gradient(45deg, #FF0080, #7928CA)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '60px'
-                      }}>
-                        📸
-                      </div>
-                    )}
-                    <span className="photo-number">{index + 1}</span>
-                    {effectName !== 'Original Photo' && (
-                      <span className="effect-name">{effectName}</span>
-                    )}
-                  </div>
+                  <ImageContainer 
+                    key={index} 
+                    imageSrc={imageSrc} 
+                    index={index} 
+                    effectName={effectName} 
+                  />
                 );
               })
             ) : (

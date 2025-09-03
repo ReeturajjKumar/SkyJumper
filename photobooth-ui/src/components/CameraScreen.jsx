@@ -273,7 +273,18 @@ const CameraScreen = ({ onComplete }) => {
       // Convert to blob and store
       canvas.toBlob((blob) => {
         const imageUrl = URL.createObjectURL(blob);
-        console.log(`📸 Photo ${photoIndex + 1} captured:`, imageUrl.substring(0, 50) + '...');
+        
+        // Create an Image object to get actual dimensions
+        const tempImg = new Image();
+        tempImg.onload = () => {
+          console.log(`📸 Photo ${photoIndex + 1} captured:`);
+          console.log(`   🖼️  Canvas size: ${canvas.width} x ${canvas.height}`);
+          console.log(`   📐 Image dimensions: ${tempImg.width} x ${tempImg.height}`);
+          console.log(`   📊 Orientation: ${tempImg.width > tempImg.height ? 'LANDSCAPE' : 'PORTRAIT'}`);
+          console.log(`   💾 Blob size: ${blob.size} bytes`);
+          console.log(`   🔗 URL: ${imageUrl.substring(0, 50)}...`);
+        };
+        tempImg.src = imageUrl;
         
         setCapturedImages(prev => {
           const newImages = [...prev];

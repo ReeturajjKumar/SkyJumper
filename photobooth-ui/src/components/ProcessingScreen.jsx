@@ -194,8 +194,36 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           // Convert blob URL to base64
           const base64Image = await blobToBase64(image);
           
+          // Log original image details
+          console.log(`🔄 Processing image ${i + 1}:`);
+          console.log(`   📂 Original URL: ${image.substring(0, 50)}...`);
+          console.log(`   🎨 Effect: ${effect.name}`);
+          console.log(`   📝 Prompt: ${effect.prompt}`);
+          console.log(`   📊 Base64 length: ${base64Image.length} characters`);
+          
+          // Create temp image to check original dimensions
+          const tempImg = new Image();
+          await new Promise((resolve) => {
+            tempImg.onload = () => {
+              console.log(`   📐 Original image: ${tempImg.width} x ${tempImg.height} (${tempImg.width > tempImg.height ? 'LANDSCAPE' : 'PORTRAIT'})`);
+              resolve();
+            };
+            tempImg.src = image;
+          });
+          
           // Apply the effect
           const processedImageUrl = await applyEffect(base64Image, effect.prompt);
+          
+          // Log processed image details
+          const processedImg = new Image();
+          await new Promise((resolve) => {
+            processedImg.onload = () => {
+              console.log(`   ✅ Processed image: ${processedImg.width} x ${processedImg.height} (${processedImg.width > processedImg.height ? 'LANDSCAPE' : 'PORTRAIT'})`);
+              console.log(`   🔗 Processed URL: ${processedImageUrl.substring(0, 50)}...`);
+              resolve();
+            };
+            processedImg.src = processedImageUrl;
+          });
           
           processed.push({
             original: image,
