@@ -65,14 +65,10 @@ const WelcomeScreen = ({ onStart }) => {
           font-size: 72px;
           font-weight: 700;
           color: #00FFFF;
+          text-shadow: 0 0 8px #00FFFF;
           margin-bottom: 20px;
           letter-spacing: 4px;
           text-transform: uppercase;
-          text-shadow: 
-            0 0 10px #00FFFF,
-            0 0 20px #00FFFF,
-            0 0 40px #00FFFF;
-          animation: slideInLeft 1s ease, neonPulse 2s ease-in-out infinite alternate;
         }
 
         .welcome-subtitle {
