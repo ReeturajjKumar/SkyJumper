@@ -321,10 +321,10 @@ const CameraScreen = ({ onComplete }) => {
         .camera-container {
           width: 100vw;
           height: 100vh;
-          background: #0a0a0a;
+          background: radial-gradient(circle at center, #0a0a1a 0%, #000 100%);
           position: relative;
           display: flex;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-family: 'Orbitron', 'Courier New', monospace;
         }
 
         .progress-bar {
@@ -339,9 +339,9 @@ const CameraScreen = ({ onComplete }) => {
 
         .progress-fill {
           height: 100%;
-          background: linear-gradient(90deg, #FF0080, #7928CA, #46C3FF);
+          background: linear-gradient(90deg, #00FFFF, #40E0D0, #008B8B);
           transition: width 0.5s ease;
-          box-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
         }
 
         .camera-main {
@@ -350,18 +350,23 @@ const CameraScreen = ({ onComplete }) => {
           justify-content: center;
           align-items: center;
           position: relative;
-          background: radial-gradient(circle at center, rgba(120, 70, 255, 0.1), transparent);
+          background: 
+            radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.1), transparent),
+            radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.05), transparent);
         }
 
         .camera-frame {
-          border: 2px solid transparent;
+          border: 3px solid #00FFFF;
           border-radius: 20px;
           position: relative;
-          background: linear-gradient(45deg, rgba(255, 70, 150, 0.1), rgba(70, 200, 255, 0.1));
+          background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(64, 224, 208, 0.1));
           background-clip: padding-box;
-          animation: borderGlow 3s ease-in-out infinite;
+          animation: cyberBorderGlow 3s ease-in-out infinite;
           transition: all 0.3s ease;
           overflow: hidden;
+          box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.5),
+            inset 0 0 20px rgba(0, 255, 255, 0.1);
         }
 
         .camera-frame.portrait {
@@ -398,14 +403,18 @@ const CameraScreen = ({ onComplete }) => {
           border-radius: 18px;
         }
 
-        @keyframes borderGlow {
+        @keyframes cyberBorderGlow {
           0%, 100% { 
-            box-shadow: 0 0 20px rgba(255, 70, 150, 0.5),
-                       inset 0 0 20px rgba(70, 200, 255, 0.1);
+            border-color: #00FFFF;
+            box-shadow: 
+              0 0 30px rgba(0, 255, 255, 0.5),
+              inset 0 0 20px rgba(0, 255, 255, 0.1);
           }
           50% { 
-            box-shadow: 0 0 40px rgba(70, 200, 255, 0.5),
-                       inset 0 0 40px rgba(255, 70, 150, 0.1);
+            border-color: #40E0D0;
+            box-shadow: 
+              0 0 50px rgba(64, 224, 208, 0.8),
+              inset 0 0 30px rgba(64, 224, 208, 0.2);
           }
         }
 
@@ -419,14 +428,17 @@ const CameraScreen = ({ onComplete }) => {
         }
 
         .pose-indicator {
-          color: white;
+          color: #00FFFF;
           font-size: 36px;
           text-align: center;
-          font-weight: 300;
+          font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 3px;
+          letter-spacing: 4px;
           animation: fadeIn 0.5s ease;
           margin-bottom: 20px;
+          text-shadow: 
+            0 0 10px #00FFFF,
+            0 0 20px #00FFFF;
         }
 
         .pose-indicator.transitioning {
@@ -438,18 +450,22 @@ const CameraScreen = ({ onComplete }) => {
           bottom: 80px;
           left: 50%;
           transform: translateX(-50%);
-          color: white;
+          color: #00FFFF;
           font-size: 20px;
           text-align: center;
-          font-weight: 400;
-          background: rgba(0,0,0,0.7);
-          backdrop-filter: blur(10px);
+          font-weight: 600;
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(15px);
           padding: 15px 30px;
           border-radius: 25px;
-          border: 1px solid rgba(255,255,255,0.2);
+          border: 2px solid #00FFFF;
           animation: statusSlideUp 0.5s ease;
           max-width: 90%;
           z-index: 10;
+          box-shadow: 
+            0 0 20px rgba(0, 255, 255, 0.4),
+            inset 0 0 20px rgba(0, 255, 255, 0.1);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .status-message.transitioning {
@@ -490,11 +506,11 @@ const CameraScreen = ({ onComplete }) => {
           transform: translate(-50%, -50%);
           font-size: 200px;
           font-weight: bold;
-          background: linear-gradient(135deg, #FF0080, #7928CA);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          filter: drop-shadow(0 0 30px rgba(255, 0, 128, 0.5));
+          color: #00FFFF;
+          text-shadow: 
+            0 0 20px #00FFFF,
+            0 0 40px #00FFFF,
+            0 0 80px #00FFFF;
           animation: countdownPulse 1s ease;
         }
 
@@ -506,11 +522,12 @@ const CameraScreen = ({ onComplete }) => {
 
         .camera-sidebar {
           width: 350px;
-          background: linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(40, 40, 40, 0.9));
+          background: linear-gradient(135deg, rgba(10, 10, 26, 0.95), rgba(0, 0, 0, 0.9));
           padding: 50px 30px;
           display: flex;
           flex-direction: column;
-          border-left: 1px solid rgba(255, 255, 255, 0.1);
+          border-left: 2px solid #00FFFF;
+          box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.1);
         }
 
         .photo-status {
@@ -521,11 +538,12 @@ const CameraScreen = ({ onComplete }) => {
 
         .status-title {
           font-size: 24px;
-          color: white;
+          color: #00FFFF;
           margin-bottom: 10px;
           text-transform: uppercase;
-          letter-spacing: 2px;
-          font-weight: 300;
+          letter-spacing: 3px;
+          font-weight: 700;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .photo-item {
@@ -533,25 +551,27 @@ const CameraScreen = ({ onComplete }) => {
           align-items: center;
           gap: 20px;
           padding: 20px;
-          background: rgba(255, 255, 255, 0.03);
+          background: rgba(0, 255, 255, 0.05);
           border-radius: 15px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(0, 255, 255, 0.2);
           transition: all 0.3s ease;
           position: relative;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .photo-item.active {
-          background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(121, 40, 202, 0.1));
-          border-color: rgba(255, 0, 128, 0.3);
+          background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(64, 224, 208, 0.1));
+          border-color: #00FFFF;
           animation: activeGlow 2s ease-in-out infinite;
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
         }
 
         @keyframes activeGlow {
           0%, 100% { 
-            box-shadow: 0 0 20px rgba(255, 0, 128, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
           }
           50% { 
-            box-shadow: 0 0 30px rgba(255, 0, 128, 0.4);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
           }
         }
 
@@ -570,20 +590,22 @@ const CameraScreen = ({ onComplete }) => {
         .photo-number {
           width: 50px;
           height: 50px;
-          background: linear-gradient(135deg, #FF0080, #7928CA);
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
           border-radius: 50%;
           display: flex;
           justify-content: center;
           align-items: center;
           font-weight: bold;
-          color: white;
+          color: #000;
           font-size: 20px;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
         }
 
         .photo-label {
           flex: 1;
-          color: rgba(255, 255, 255, 0.7);
+          color: #40E0D0;
           font-size: 16px;
+          font-weight: 600;
         }
 
         .photo-item.completed .photo-label {
@@ -653,21 +675,22 @@ const CameraScreen = ({ onComplete }) => {
           border-bottom-right-radius: 20px;
         }
 
-        .skyjumper-watermark {
+        .pikcha-watermark {
           position: absolute;
           bottom: 30px;
           right: 30px;
           display: flex;
           align-items: center;
           gap: 10px;
-          opacity: 0.3;
+          opacity: 0.4;
         }
 
         .watermark-text {
-          color: white;
+          color: #00FFFF;
           font-size: 14px;
-          font-weight: 600;
+          font-weight: 700;
           letter-spacing: 1px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         /* Floating Background Particles */
@@ -695,7 +718,6 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #FF0080, rgba(255, 0, 128, 0.3), transparent);
           top: 20%;
           left: 10%;
-          animation: floatUp1 15s linear infinite;
         }
 
         .particle-2 {
@@ -704,7 +726,6 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #7928CA, rgba(121, 40, 202, 0.3), transparent);
           top: 40%;
           left: 20%;
-          animation: floatUp2 18s linear infinite;
         }
 
         .particle-3 {
@@ -713,7 +734,6 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #46FF90, rgba(70, 255, 144, 0.3), transparent);
           top: 60%;
           left: 15%;
-          animation: floatUp3 12s linear infinite;
         }
 
         .particle-4 {
@@ -722,7 +742,6 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #46C3FF, rgba(70, 195, 255, 0.3), transparent);
           top: 80%;
           left: 25%;
-          animation: floatUp4 20s linear infinite;
         }
 
         .particle-5 {
@@ -731,7 +750,6 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #FF0080, rgba(255, 0, 128, 0.3), transparent);
           top: 30%;
           right: 10%;
-          animation: floatUp5 16s linear infinite;
         }
 
         .particle-6 {
@@ -740,7 +758,6 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #7928CA, rgba(121, 40, 202, 0.3), transparent);
           top: 50%;
           right: 20%;
-          animation: floatUp6 14s linear infinite;
         }
 
         .particle-7 {
@@ -749,7 +766,6 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #46FF90, rgba(70, 255, 144, 0.3), transparent);
           top: 70%;
           right: 15%;
-          animation: floatUp7 22s linear infinite;
         }
 
         .particle-8 {
@@ -758,7 +774,6 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #46C3FF, rgba(70, 195, 255, 0.3), transparent);
           top: 90%;
           right: 30%;
-          animation: floatUp8 19s linear infinite;
         }
 
         .particle-9 {
@@ -767,7 +782,6 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #FF0080, rgba(255, 0, 128, 0.3), transparent);
           top: 15%;
           left: 50%;
-          animation: floatUp9 17s linear infinite;
         }
 
         .particle-10 {
@@ -776,77 +790,282 @@ const CameraScreen = ({ onComplete }) => {
           background: radial-gradient(circle, #7928CA, rgba(121, 40, 202, 0.3), transparent);
           top: 85%;
           left: 60%;
-          animation: floatUp10 13s linear infinite;
         }
 
-        @keyframes floatUp1 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(20px) rotate(360deg); opacity: 0; }
+
+        /* Enhanced Countdown Overlay Styles */
+        .countdown-overlay {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          z-index: 20;
         }
 
-        @keyframes floatUp2 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(-15px) rotate(-360deg); opacity: 0; }
+        .countdown-circle {
+          position: relative;
+          width: 200px;
+          height: 200px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 30px;
         }
 
-        @keyframes floatUp3 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(30px) rotate(360deg); opacity: 0; }
+        .countdown-number {
+          font-size: 120px;
+          font-weight: bold;
+          background: linear-gradient(135deg, #FF0080, #7928CA, #46C3FF);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          filter: drop-shadow(0 0 20px rgba(255, 0, 128, 0.6));
+          animation: countdownNumberPulse 1s ease;
+          z-index: 2;
         }
 
-        @keyframes floatUp4 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(-10px) rotate(-360deg); opacity: 0; }
+        .countdown-ring {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 200px;
+          height: 200px;
+          border: 4px solid rgba(255, 0, 128, 0.3);
+          border-radius: 50%;
+          border-top: 4px solid #FF0080;
+          animation: countdownRingSpin 1s linear;
+          filter: drop-shadow(0 0 15px rgba(255, 0, 128, 0.4));
         }
 
-        @keyframes floatUp5 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(-25px) rotate(360deg); opacity: 0; }
+        .countdown-message {
+          font-size: 28px;
+          font-weight: 600;
+          color: white;
+          text-align: center;
+          background: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(10px);
+          padding: 15px 30px;
+          border-radius: 25px;
+          border: 2px solid rgba(255, 0, 128, 0.3);
+          animation: countdownMessageBounce 1s ease;
+          text-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
         }
 
-        @keyframes floatUp6 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(15px) rotate(-360deg); opacity: 0; }
+        @keyframes countdownNumberPulse {
+          0% { 
+            transform: scale(0.5); 
+            opacity: 0;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 128, 0.6)) blur(2px);
+          }
+          50% { 
+            transform: scale(1.3); 
+            filter: drop-shadow(0 0 30px rgba(255, 0, 128, 0.8)) blur(0px);
+          }
+          100% { 
+            transform: scale(1); 
+            opacity: 1;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 128, 0.6)) blur(0px);
+          }
         }
 
-        @keyframes floatUp7 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(-20px) rotate(360deg); opacity: 0; }
+        @keyframes countdownRingSpin {
+          0% { 
+            transform: rotate(0deg) scale(0.8);
+            border-top-color: #FF0080;
+          }
+          50% { 
+            transform: rotate(180deg) scale(1.1);
+            border-top-color: #7928CA;
+          }
+          100% { 
+            transform: rotate(360deg) scale(1);
+            border-top-color: #46C3FF;
+          }
         }
 
-        @keyframes floatUp8 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(25px) rotate(-360deg); opacity: 0; }
+        @keyframes countdownMessageBounce {
+          0% { 
+            transform: translateY(20px) scale(0.8);
+            opacity: 0;
+          }
+          50% { 
+            transform: translateY(-10px) scale(1.1);
+          }
+          100% { 
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
         }
 
-        @keyframes floatUp9 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(-30px) rotate(360deg); opacity: 0; }
+        /* Pose Suggestion Styles */
+        .pose-suggestion {
+          position: absolute;
+          top: 20%;
+          left: 50%;
+          transform: translateX(-50%);
+          text-align: center;
+          z-index: 15;
+          animation: poseSuggestionFloat 2s ease-in-out infinite;
         }
 
-        @keyframes floatUp10 {
-          0% { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(-100px) translateX(10px) rotate(-360deg); opacity: 0; }
+        .suggestion-text {
+          font-size: 32px;
+          font-weight: 600;
+          color: white;
+          text-shadow: 0 0 15px rgba(255, 0, 128, 0.6);
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(15px);
+          padding: 20px 40px;
+          border-radius: 30px;
+          border: 2px solid rgba(255, 0, 128, 0.4);
+          margin-bottom: 20px;
+          animation: suggestionTextGlow 2s ease-in-out infinite;
+        }
+
+        .energy-particles {
+          display: flex;
+          justify-content: center;
+          gap: 15px;
+          margin-top: 10px;
+        }
+
+        .energy-dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          animation: energyDotPulse 1.5s ease-in-out infinite;
+        }
+
+        .dot-1 {
+          background: radial-gradient(circle, #FF0080, rgba(255, 0, 128, 0.3));
+          animation-delay: 0s;
+        }
+
+        .dot-2 {
+          background: radial-gradient(circle, #7928CA, rgba(121, 40, 202, 0.3));
+          animation-delay: 0.3s;
+        }
+
+        .dot-3 {
+          background: radial-gradient(circle, #46C3FF, rgba(70, 195, 255, 0.3));
+          animation-delay: 0.6s;
+        }
+
+        @keyframes poseSuggestionFloat {
+          0%, 100% { 
+            transform: translateX(-50%) translateY(0px);
+          }
+          50% { 
+            transform: translateX(-50%) translateY(-10px);
+          }
+        }
+
+        @keyframes suggestionTextGlow {
+          0%, 100% { 
+            text-shadow: 0 0 15px rgba(255, 0, 128, 0.6);
+            border-color: rgba(255, 0, 128, 0.4);
+          }
+          50% { 
+            text-shadow: 0 0 25px rgba(255, 0, 128, 0.9);
+            border-color: rgba(255, 0, 128, 0.7);
+          }
+        }
+
+        @keyframes energyDotPulse {
+          0%, 100% { 
+            transform: scale(1);
+            opacity: 0.6;
+          }
+          50% { 
+            transform: scale(1.5);
+            opacity: 1;
+            box-shadow: 0 0 15px currentColor;
+          }
+        }
+
+        /* Photo Success Animation Styles */
+        .photo-success {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          text-align: center;
+          z-index: 25;
+          animation: photoSuccessShow 2s ease;
+        }
+
+        .success-explosion {
+          font-size: 80px;
+          animation: successExplosion 1s ease;
+          margin-bottom: 20px;
+          filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+        }
+
+        .success-message {
+          font-size: 36px;
+          font-weight: bold;
+          background: linear-gradient(135deg, #FFD700, #FF0080, #46C3FF);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(15px);
+          padding: 20px 40px;
+          border-radius: 25px;
+          border: 3px solid rgba(255, 215, 0, 0.5);
+          animation: successMessagePop 1s ease;
+        }
+
+        @keyframes photoSuccessShow {
+          0% { 
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+          }
+          20% { 
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+          }
+          80% { 
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
+          100% { 
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+          }
+        }
+
+        @keyframes successExplosion {
+          0% { 
+            transform: scale(0.3) rotate(0deg);
+            opacity: 0;
+          }
+          50% { 
+            transform: scale(1.5) rotate(180deg);
+            opacity: 1;
+          }
+          100% { 
+            transform: scale(1) rotate(360deg);
+            opacity: 0.8;
+          }
+        }
+
+        @keyframes successMessagePop {
+          0% { 
+            transform: scale(0.5);
+            opacity: 0;
+          }
+          70% { 
+            transform: scale(1.1);
+          }
+          100% { 
+            transform: scale(1);
+            opacity: 1;
+          }
         }
 
 
@@ -946,28 +1165,55 @@ const CameraScreen = ({ onComplete }) => {
             <div className="corner bottom-left"></div>
             <div className="corner bottom-right"></div>
           </div>
+          {/* Enhanced Countdown Overlay */}
           {countdown ? (
-            <div className="countdown-display" style={{ 
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              fontSize: '120px',
-              fontWeight: 'bold',
-              color: '#FF0080',
-              textShadow: '0 0 20px rgba(255, 0, 128, 0.8)',
-              zIndex: 1000
-            }}>
-              {countdown}
+            <div className="countdown-overlay">
+              <div className="countdown-circle">
+                <div className="countdown-number">{countdown}</div>
+                <div className="countdown-ring"></div>
+              </div>
+              <div className="countdown-message">
+                {countdown === 3 && "Get Ready! 📸"}
+                {countdown === 2 && "Strike a Pose! ✨"}
+                {countdown === 1 && "Smile Big! 😄"}
+              </div>
             </div>
           ) : null}
+
+          {/* Pose Suggestions */}
+          {!countdown && isCapturing && (
+            <div className="pose-suggestion">
+              <div className="suggestion-text">
+                {currentPhotoIndex === 0 && "🌟 Show your best pose!"}
+                {currentPhotoIndex === 1 && "😊 Give us that beautiful smile!"}
+                {currentPhotoIndex === 2 && "🎉 Be creative & have fun!"}
+              </div>
+              <div className="energy-particles">
+                <div className="energy-dot dot-1"></div>
+                <div className="energy-dot dot-2"></div>
+                <div className="energy-dot dot-3"></div>
+              </div>
+            </div>
+          )}
+
+          {/* Photo Success Animation */}
+          {photoCount > 0 && !countdown && !isCapturing && (
+            <div className="photo-success">
+              <div className="success-explosion">
+                ✨🎊✨
+              </div>
+              <div className="success-message">
+                Amazing Shot #{photoCount}!
+              </div>
+            </div>
+          )}
         </div>
         
         {/* Hidden canvas for image capture */}
         <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-        <div className="skyjumper-watermark">
-          <span className="watermark-text">SKYJUMPER</span>
+        <div className="pikcha-watermark">
+          <span className="watermark-text">PIKCHA.AI</span>
         </div>
       </div>
 

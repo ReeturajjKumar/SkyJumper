@@ -139,8 +139,9 @@ const PreviewSettings = ({ settings }) => {
           align-items: center;
           margin-bottom: 20px;
           padding-bottom: 16px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          border-bottom: 1px solid rgba(0, 255, 255, 0.2);
           flex-shrink: 0;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .preview-tabs {
@@ -156,13 +157,14 @@ const PreviewSettings = ({ settings }) => {
 
         .last-updated {
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.5);
+          color: #40E0D0;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .refresh-btn {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          color: white;
+          background: rgba(0, 255, 255, 0.1);
+          border: 1px solid rgba(0, 255, 255, 0.3);
+          color: #00FFFF;
           padding: 6px 12px;
           border-radius: 8px;
           font-size: 11px;
@@ -171,11 +173,15 @@ const PreviewSettings = ({ settings }) => {
           display: flex;
           align-items: center;
           gap: 6px;
+          text-shadow: 0 0 5px #00FFFF;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .refresh-btn:hover {
-          background: rgba(255, 255, 255, 0.15);
+          background: rgba(0, 255, 255, 0.15);
+          border-color: rgba(0, 255, 255, 0.5);
           transform: translateY(-1px);
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
         }
 
         .refresh-btn.loading {
@@ -202,15 +208,18 @@ const PreviewSettings = ({ settings }) => {
           align-items: center;
           gap: 6px;
           font-size: 11px;
-          color: #46ff90;
+          color: #00FFFF;
+          font-weight: 600;
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .live-dot {
           width: 8px;
           height: 8px;
-          background: #46ff90;
+          background: #00FFFF;
           border-radius: 50%;
           animation: livePulse 2s ease-in-out infinite;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
         }
 
         @keyframes livePulse {
@@ -219,9 +228,9 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .preview-tab {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: rgba(255, 255, 255, 0.7);
+          background: rgba(0, 255, 255, 0.05);
+          border: 1px solid rgba(0, 255, 255, 0.15);
+          color: rgba(0, 255, 255, 0.7);
           padding: 10px 16px;
           border-radius: 16px;
           cursor: pointer;
@@ -229,17 +238,23 @@ const PreviewSettings = ({ settings }) => {
           font-size: 13px;
           font-weight: 500;
           white-space: nowrap;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .preview-tab:hover {
-          background: rgba(255, 255, 255, 0.08);
-          color: white;
+          background: rgba(0, 255, 255, 0.1);
+          color: #00FFFF;
+          border-color: rgba(0, 255, 255, 0.3);
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .preview-tab.active {
-          background: linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(121, 40, 202, 0.15));
-          border-color: #FF0080;
-          color: white;
+          background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(64, 224, 208, 0.15));
+          border-color: #00FFFF;
+          color: #00FFFF;
+          box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .tab-content {
@@ -268,17 +283,21 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .overview-card {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.05);
+          border: 1px solid rgba(0, 255, 255, 0.2);
           border-radius: 12px;
           padding: 20px;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .overview-title {
           font-size: 16px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 16px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .overview-items {
@@ -300,14 +319,16 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .item-label {
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           font-size: 13px;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .item-value {
-          color: white;
-          font-weight: 600;
+          color: #00FFFF;
+          font-weight: 700;
           font-size: 13px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .effects-preview {
@@ -317,16 +338,19 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .effect-preview-card {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.05);
+          border: 1px solid rgba(0, 255, 255, 0.15);
           border-radius: 12px;
           padding: 16px;
           transition: all 0.3s ease;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .effect-preview-card:hover {
-          background: rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.1);
           transform: translateY(-1px);
+          border-color: rgba(0, 255, 255, 0.3);
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
         }
 
         .effect-preview-card.disabled {
@@ -342,9 +366,10 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .effect-name {
-          color: white;
-          font-weight: 600;
+          color: #00FFFF;
+          font-weight: 700;
           font-size: 14px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .effect-status {
@@ -355,9 +380,11 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .effect-status.enabled {
-          background: rgba(70, 255, 144, 0.15);
-          color: #46ff90;
-          border: 1px solid rgba(70, 255, 144, 0.3);
+          background: rgba(0, 255, 255, 0.15);
+          color: #00FFFF;
+          border: 1px solid rgba(0, 255, 255, 0.3);
+          text-shadow: 0 0 5px #00FFFF;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .effect-status.disabled {
@@ -367,10 +394,11 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .effect-prompt {
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           font-size: 12px;
           line-height: 1.4;
           font-style: italic;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .effect-prompt.empty {
@@ -378,10 +406,11 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .timeline-container {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.05);
+          border: 1px solid rgba(0, 255, 255, 0.2);
           border-radius: 12px;
           padding: 24px;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .timeline-header {
@@ -391,14 +420,18 @@ const PreviewSettings = ({ settings }) => {
 
         .timeline-title {
           font-size: 16px;
-          color: white;
+          color: #00FFFF;
           margin-bottom: 8px;
-          font-weight: 600;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .timeline-subtitle {
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           font-size: 13px;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .timeline-flow {
@@ -416,13 +449,14 @@ const PreviewSettings = ({ settings }) => {
           left: 16px;
           right: 16px;
           height: 2px;
-          background: linear-gradient(90deg, #FF0080, #7928CA, #46C3FF);
+          background: linear-gradient(90deg, #00FFFF, #40E0D0, #00CED1);
           border-radius: 1px;
           z-index: 1;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
         .timeline-step {
-          background: white;
+          background: #000;
           border: 3px solid;
           width: 48px;
           height: 48px;
@@ -432,18 +466,19 @@ const PreviewSettings = ({ settings }) => {
           align-items: center;
           justify-content: center;
           font-weight: 700;
-          color: #FF0080;
+          color: #00FFFF;
           z-index: 2;
           position: relative;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
-        .timeline-step:nth-child(2) { border-color: #FF0080; }
-        .timeline-step:nth-child(3) { border-color: #7928CA; }
-        .timeline-step:nth-child(4) { border-color: #46C3FF; }
-        .timeline-step:nth-child(5) { border-color: #46ff90; }
-        .timeline-step:nth-child(6) { border-color: #FFD700; }
-        .timeline-step:nth-child(7) { border-color: #FF8C42; }
+        .timeline-step:nth-child(2) { border-color: #00FFFF; }
+        .timeline-step:nth-child(3) { border-color: #40E0D0; }
+        .timeline-step:nth-child(4) { border-color: #00CED1; }
+        .timeline-step:nth-child(5) { border-color: #20B2AA; }
+        .timeline-step:nth-child(6) { border-color: #48D1CC; }
+        .timeline-step:nth-child(7) { border-color: #AFEEEE; }
 
         .step-number {
           font-size: 14px;
@@ -469,15 +504,17 @@ const PreviewSettings = ({ settings }) => {
 
         .label-title {
           font-size: 11px;
-          color: white;
-          font-weight: 600;
+          color: #00FFFF;
+          font-weight: 700;
           margin-bottom: 2px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .label-desc {
           font-size: 9px;
-          color: rgba(255, 255, 255, 0.5);
+          color: #40E0D0;
           line-height: 1.2;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .export-container {
@@ -487,17 +524,21 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .export-section {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.05);
+          border: 1px solid rgba(0, 255, 255, 0.2);
           border-radius: 12px;
           padding: 20px;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .export-title {
           font-size: 16px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 16px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .export-actions {
@@ -507,39 +548,45 @@ const PreviewSettings = ({ settings }) => {
         }
 
         .export-btn {
-          background: linear-gradient(135deg, #FF0080, #7928CA);
-          color: white;
-          border: none;
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          color: #000;
+          border: 2px solid #00FFFF;
           padding: 12px 16px;
           border-radius: 8px;
-          font-weight: 600;
+          font-weight: 700;
           font-size: 13px;
           cursor: pointer;
           transition: all 0.3s ease;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
         }
 
         .export-btn:hover {
           transform: translateY(-1px);
-          box-shadow: 0 8px 20px rgba(255, 0, 128, 0.3);
+          box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         .export-btn.secondary {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.15);
+          background: rgba(0, 255, 255, 0.1);
+          border: 1px solid rgba(0, 255, 255, 0.3);
+          color: #00FFFF;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .export-btn.secondary:hover {
-          background: rgba(255, 255, 255, 0.15);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          background: rgba(0, 255, 255, 0.15);
+          border-color: rgba(0, 255, 255, 0.5);
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .settings-json {
           background: rgba(0, 0, 0, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(0, 255, 255, 0.2);
           border-radius: 8px;
           padding: 16px;
-          color: #46ff90;
-          font-family: 'SF Mono', 'Monaco', monospace;
+          color: #00FFFF;
+          font-family: 'Orbitron', 'SF Mono', 'Monaco', monospace;
           font-size: 11px;
           max-height: 250px;
           overflow-y: auto;
@@ -547,6 +594,8 @@ const PreviewSettings = ({ settings }) => {
           -ms-overflow-style: none;
           white-space: pre-wrap;
           word-wrap: break-word;
+          text-shadow: 0 0 5px #00FFFF;
+          box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .settings-json::-webkit-scrollbar {
@@ -563,23 +612,26 @@ const PreviewSettings = ({ settings }) => {
         .summary-stat {
           text-align: center;
           padding: 16px;
-          background: rgba(255, 255, 255, 0.04);
+          background: rgba(0, 255, 255, 0.05);
           border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(0, 255, 255, 0.15);
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .summary-value {
           font-size: 18px;
           font-weight: 700;
-          color: white;
+          color: #00FFFF;
           margin-bottom: 4px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .summary-label {
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           text-transform: uppercase;
           letter-spacing: 0.5px;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         /* Responsive Design */

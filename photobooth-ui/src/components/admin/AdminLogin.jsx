@@ -34,38 +34,45 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
       <style>{`
         .login-container {
           min-height: 100vh;
-          background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+          background: radial-gradient(circle at center, #0a0a1a 0%, #000 100%);
           display: flex;
           justify-content: center;
           align-items: center;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-family: 'Orbitron', 'Courier New', monospace;
           position: relative;
           overflow: hidden;
+          color: #00FFFF;
         }
 
         .login-container::before {
           content: '';
           position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: conic-gradient(from 0deg at 50% 50%, 
-              rgba(255, 70, 150, 0.1), 
-              rgba(120, 70, 255, 0.1), 
-              rgba(70, 200, 255, 0.1), 
-              rgba(255, 70, 150, 0.1));
-          animation: rotate 20s linear infinite;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.15), transparent),
+            radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.1), transparent),
+            linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.02) 50%, transparent 52%);
+          animation: cyberScan 20s linear infinite;
         }
 
-        @keyframes rotate {
-          to { transform: rotate(360deg); }
+        @keyframes cyberScan {
+          0%, 100% { 
+            transform: translateX(0) translateY(0);
+            opacity: 0.8;
+          }
+          50% { 
+            transform: translateX(40px) translateY(-30px);
+            opacity: 0.3;
+          }
         }
 
         .login-card {
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(0, 255, 255, 0.08);
+          backdrop-filter: blur(25px);
+          border: 2px solid rgba(0, 255, 255, 0.3);
           border-radius: 16px;
           padding: 40px;
           width: 100%;
@@ -73,7 +80,10 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
           text-align: center;
           position: relative;
           z-index: 1;
-          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+          box-shadow: 
+            0 0 40px rgba(0, 255, 255, 0.3),
+            0 25px 50px rgba(0, 0, 0, 0.8),
+            inset 0 0 30px rgba(0, 255, 255, 0.1);
         }
 
         .login-header {
@@ -82,20 +92,38 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
 
         .login-title {
           font-size: 24px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 8px;
-          background: linear-gradient(135deg, #FF0080, #7928CA, #46C3FF);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          text-shadow: 
+            0 0 10px #00FFFF,
+            0 0 20px #00FFFF;
+          animation: titlePulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titlePulse {
+          from {
+            text-shadow: 
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF;
+          }
+          to {
+            text-shadow: 
+              0 0 5px #00FFFF,
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF;
+          }
         }
 
         .login-subtitle {
           font-size: 14px;
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           margin-bottom: 24px;
           line-height: 1.4;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .login-form {
@@ -109,45 +137,49 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
 
         .form-label {
           display: block;
-          color: rgba(255, 255, 255, 0.8);
+          color: #00FFFF;
           font-size: 14px;
-          font-weight: 600;
+          font-weight: 700;
           margin-bottom: 8px;
           text-transform: uppercase;
-          letter-spacing: 1px;
+          letter-spacing: 2px;
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .form-input {
           width: 100%;
           padding: 18px 24px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: rgba(0, 255, 255, 0.1);
+          border: 1px solid rgba(0, 255, 255, 0.3);
           border-radius: 50px;
-          color: white;
+          color: #00FFFF;
           font-size: 16px;
           outline: none;
           transition: all 0.3s ease;
+          font-weight: 600;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .form-input:focus {
-          border-color: #FF0080;
-          box-shadow: 0 0 20px rgba(255, 0, 128, 0.2);
-          background: rgba(255, 255, 255, 0.15);
+          border-color: #00FFFF;
+          box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+          background: rgba(0, 255, 255, 0.15);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .form-input::placeholder {
-          color: rgba(255, 255, 255, 0.4);
+          color: rgba(0, 255, 255, 0.5);
         }
 
         .login-btn {
           width: 100%;
           padding: 18px 24px;
-          background: linear-gradient(135deg, #FF0080, #7928CA);
-          color: white;
-          border: none;
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          color: #000;
+          border: 2px solid #00FFFF;
           border-radius: 50px;
           font-size: 16px;
-          font-weight: 600;
+          font-weight: 700;
           cursor: pointer;
           transition: all 0.3s ease;
           text-transform: uppercase;
@@ -155,6 +187,9 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
           position: relative;
           overflow: hidden;
           margin-bottom: 20px;
+          box-shadow: 
+            0 0 25px rgba(0, 255, 255, 0.4),
+            inset 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .login-btn::before {
@@ -174,7 +209,11 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
 
         .login-btn:hover {
           transform: translateY(-3px);
-          box-shadow: 0 20px 40px rgba(255, 0, 128, 0.3);
+          box-shadow: 
+            0 0 35px rgba(0, 255, 255, 0.8),
+            0 20px 40px rgba(0, 255, 255, 0.4),
+            inset 0 0 20px rgba(0, 255, 255, 0.2);
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         .login-btn:disabled {
@@ -264,8 +303,8 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
 
       <div className="login-card">
         <div className="login-header">
-          <h1 className="login-title">Admin Panel</h1>
-          <p className="login-subtitle">Enter your password to access the configuration panel</p>
+          <h1 className="login-title">PIKCHA.AI Access</h1>
+          <p className="login-subtitle">Enter credentials to access the AI control matrix</p>
         </div>
 
         <form className="login-form" onSubmit={handleLogin}>
@@ -295,7 +334,7 @@ const AdminLogin = ({ onAuthenticated, onSettingsLoad }) => {
 
         <div className="login-footer">
           <div className="footer-text">
-            Secure Admin Access
+            PIKCHA.AI Control Matrix
           </div>
         </div>
       </div>

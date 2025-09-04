@@ -204,25 +204,30 @@ const CaptureSettings = ({ settings, onUpdate }) => {
         }
 
         .setting-section {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.05);
+          border: 1px solid rgba(0, 255, 255, 0.2);
           border-radius: 12px;
           padding: 20px;
           flex-shrink: 0;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .setting-title {
           font-size: 16px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 12px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .setting-description {
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           margin-bottom: 16px;
           line-height: 1.4;
           font-size: 13px;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .auto-capture-toggle {
@@ -230,15 +235,18 @@ const CaptureSettings = ({ settings, onUpdate }) => {
           align-items: center;
           justify-content: space-between;
           padding: 16px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.08);
+          border: 1px solid rgba(0, 255, 255, 0.2);
           border-radius: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .auto-capture-toggle:hover {
-          background: rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.12);
+          border-color: rgba(0, 255, 255, 0.4);
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
         }
 
         .auto-capture-info {
@@ -246,16 +254,18 @@ const CaptureSettings = ({ settings, onUpdate }) => {
         }
 
         .auto-capture-details h4 {
-          color: white;
+          color: #00FFFF;
           font-size: 15px;
-          font-weight: 600;
+          font-weight: 700;
           margin-bottom: 4px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .auto-capture-details p {
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           font-size: 12px;
           line-height: 1.3;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .toggle-switch {
@@ -270,7 +280,8 @@ const CaptureSettings = ({ settings, onUpdate }) => {
         }
 
         .toggle-switch.enabled {
-          background: linear-gradient(135deg, #46ff90, #25D366);
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
         }
 
         .toggle-slider {
@@ -296,37 +307,42 @@ const CaptureSettings = ({ settings, onUpdate }) => {
         }
 
         .option-card {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.05);
+          border: 1px solid rgba(0, 255, 255, 0.15);
           border-radius: 8px;
           padding: 16px 12px;
           cursor: pointer;
           transition: all 0.3s ease;
           text-align: center;
           position: relative;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .option-card:hover {
-          background: rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.1);
           transform: translateY(-1px);
+          border-color: rgba(0, 255, 255, 0.3);
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
         }
 
         .option-card.active {
-          border-color: #FF0080;
-          background: rgba(255, 0, 128, 0.1);
-          box-shadow: 0 4px 16px rgba(255, 0, 128, 0.2);
+          border-color: #00FFFF;
+          background: rgba(0, 255, 255, 0.15);
+          box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
         }
 
         .option-label {
           font-size: 14px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 4px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .option-description {
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.5);
+          color: #40E0D0;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .active-indicator {
@@ -335,7 +351,7 @@ const CaptureSettings = ({ settings, onUpdate }) => {
           right: 8px;
           width: 16px;
           height: 16px;
-          background: linear-gradient(135deg, #46ff90, #25D366);
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -343,6 +359,7 @@ const CaptureSettings = ({ settings, onUpdate }) => {
           opacity: 0;
           transform: scale(0.8);
           transition: all 0.3s ease;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
         }
 
         .option-card.active .active-indicator {
@@ -363,17 +380,21 @@ const CaptureSettings = ({ settings, onUpdate }) => {
 
         .range-title {
           font-size: 14px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .range-value {
-          background: rgba(255, 0, 128, 0.15);
-          color: #FF0080;
+          background: rgba(0, 255, 255, 0.15);
+          color: #00FFFF;
           padding: 4px 12px;
           border-radius: 16px;
           font-size: 12px;
           font-weight: 600;
+          border: 1px solid rgba(0, 255, 255, 0.3);
+          text-shadow: 0 0 5px #00FFFF;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .range-slider {
@@ -389,35 +410,39 @@ const CaptureSettings = ({ settings, onUpdate }) => {
           -webkit-appearance: none;
           width: 18px;
           height: 18px;
-          background: linear-gradient(135deg, #FF0080, #7928CA);
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
           border-radius: 50%;
           cursor: pointer;
-          box-shadow: 0 2px 6px rgba(255, 0, 128, 0.3);
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
         .range-slider::-moz-range-thumb {
           width: 18px;
           height: 18px;
-          background: linear-gradient(135deg, #FF0080, #7928CA);
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
           border-radius: 50%;
           cursor: pointer;
           border: none;
-          box-shadow: 0 2px 6px rgba(255, 0, 128, 0.3);
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
         .preview-section {
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          background: rgba(0, 255, 255, 0.03);
+          border: 1px solid rgba(0, 255, 255, 0.15);
           border-radius: 12px;
           padding: 20px;
           flex-shrink: 0;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .preview-title {
           font-size: 16px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 16px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .preview-stats {
@@ -427,25 +452,28 @@ const CaptureSettings = ({ settings, onUpdate }) => {
         }
 
         .stat-card {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.05);
+          border: 1px solid rgba(0, 255, 255, 0.15);
           border-radius: 8px;
           padding: 16px 12px;
           text-align: center;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .stat-value {
           font-size: 18px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 4px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .stat-label {
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.5);
+          color: #40E0D0;
           text-transform: uppercase;
           letter-spacing: 0.5px;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .timeline-preview {
@@ -457,9 +485,10 @@ const CaptureSettings = ({ settings, onUpdate }) => {
 
         .timeline-title {
           font-size: 14px;
-          color: white;
+          color: #00FFFF;
           margin-bottom: 12px;
-          font-weight: 600;
+          font-weight: 700;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .timeline-steps {
@@ -476,31 +505,34 @@ const CaptureSettings = ({ settings, onUpdate }) => {
           left: 0;
           right: 0;
           height: 2px;
-          background: linear-gradient(90deg, #FF0080, #7928CA, #46C3FF);
+          background: linear-gradient(90deg, #00FFFF, #40E0D0, #00CED1);
           z-index: 1;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
         .timeline-step {
-          background: white;
-          border: 2px solid #FF0080;
+          background: #000;
+          border: 2px solid #00FFFF;
           width: 28px;
           height: 28px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-weight: 600;
+          font-weight: 700;
           font-size: 12px;
-          color: #FF0080;
+          color: #00FFFF;
           z-index: 2;
           position: relative;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
-        .timeline-step:nth-child(2) { border-color: #FF0080; }
-        .timeline-step:nth-child(3) { border-color: #7928CA; }
-        .timeline-step:nth-child(4) { border-color: #46C3FF; }
-        .timeline-step:nth-child(5) { border-color: #46ff90; }
-        .timeline-step:nth-child(6) { border-color: #FFD700; }
+        .timeline-step:nth-child(2) { border-color: #00FFFF; }
+        .timeline-step:nth-child(3) { border-color: #40E0D0; }
+        .timeline-step:nth-child(4) { border-color: #00CED1; }
+        .timeline-step:nth-child(5) { border-color: #20B2AA; }
+        .timeline-step:nth-child(6) { border-color: #48D1CC; }
 
         .timeline-labels {
           display: flex;
@@ -510,10 +542,11 @@ const CaptureSettings = ({ settings, onUpdate }) => {
 
         .timeline-label {
           font-size: 10px;
-          color: rgba(255, 255, 255, 0.5);
+          color: #40E0D0;
           text-align: center;
           max-width: 50px;
           line-height: 1.2;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         /* Responsive Design */

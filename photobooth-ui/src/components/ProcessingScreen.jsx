@@ -3,9 +3,11 @@ import { useSettings } from '../context/SettingsContext';
 
 const ProcessingScreen = ({ capturedImages, onComplete }) => {
   const { settings, getEnabledEffects } = useSettings();
-  const [processingStatus, setProcessingStatus] = useState('Applying premium effects...');
+  const [processingStatus, setProcessingStatus] = useState('Initializing AI transformation...');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isPhoneSent, setIsPhoneSent] = useState(false);
+  const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false);
+  const [isWhatsAppEnabled, setIsWhatsAppEnabled] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [processedImages, setProcessedImages] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -14,11 +16,11 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
   const enabledEffects = getEnabledEffects();
   
   const processingMessages = [
-    `Applying ${enabledEffects.length > 0 ? enabledEffects[0]?.name || 'premium' : 'premium'} effects...`,
-    'Enhancing colors...',
-    'Optimizing quality...',
-    `Creating your ${enabledEffects.length > 1 ? enabledEffects[1]?.name?.toLowerCase() || 'masterpiece' : 'masterpiece'}...`,
-    'Finalizing details...'
+    `Applying ${enabledEffects.length > 0 ? enabledEffects[0]?.name || 'AI enhancement' : 'AI enhancement'} effects...`,
+    'Neural networks analyzing image data...',
+    'Optimizing digital matrix parameters...',
+    `Generating your ${enabledEffects.length > 1 ? enabledEffects[1]?.name?.toLowerCase() || 'digital masterpiece' : 'digital masterpiece'}...`,
+    'Finalizing AI transformation...'
   ];
 
   useEffect(() => {
@@ -283,33 +285,44 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
     }
     
     setIsProcessing(false);
+    setIsWhatsAppEnabled(true);
   };
 
   const handlePhoneSubmit = (e) => {
     e.preventDefault();
     
     if (phoneNumber && phoneNumber.length >= 10) {
-      setIsPhoneSent(true);
+      setIsSendingWhatsApp(true);
       
-      // Send to backend or store the number
-      console.log('WhatsApp number submitted:', phoneNumber);
+      console.log('📱 WhatsApp process started for:', phoneNumber);
       
-      // Auto-proceed after 1.5 seconds
+      // Simple loading state - simulate WhatsApp sending process
       setTimeout(() => {
-        handleContinue();
-      }, 1500);
+        console.log('✅ WhatsApp process completed - redirecting to next screen');
+        setIsSendingWhatsApp(false);
+        setIsPhoneSent(true);
+        
+        // Direct redirect after process completion
+        setTimeout(() => {
+          const imagesToPass = processedImages.length > 0 ? processedImages : capturedImages;
+          console.log('🚀 Redirecting to output screen with:', imagesToPass.length, 'images');
+          onComplete(imagesToPass);
+        }, 1000);
+      }, 2500); // 2.5 seconds loading
     }
   };
 
 
   const handleContinue = () => {
-    // Wait for processing to complete or use processed images if available
-    if (isProcessing) {
+    // Check if we have processed images (which means processing is complete) OR processing is not running
+    const hasProcessedImages = processedImages.length > 0 && processedImages.length === capturedImages.length;
+    
+    if (isProcessing && !hasProcessedImages) {
       console.log('⏳ Processing still in progress, waiting for completion...');
-      // Check again after 2 seconds if processing is ongoing
+      // Check again after 1 second if processing is ongoing
       setTimeout(() => {
         handleContinue();
-      }, 2000);
+      }, 1000);
       return;
     }
     
@@ -317,15 +330,7 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
     const imagesToPass = processedImages.length > 0 ? processedImages : capturedImages;
     console.log('🚀 Continuing to output with:', imagesToPass.length, 'images');
     console.log('📦 Images type:', processedImages.length > 0 ? 'processed' : 'original');
-    console.log('📦 Processed images available:', processedImages.length);
-    console.log('📦 Images structure:', imagesToPass.map((img, i) => ({
-      index: i,
-      type: typeof img,
-      hasProcessed: !!img.processed,
-      hasOriginal: !!img.original,
-      hasEffect: !!img.effect
-    })));
-    console.log('📦 Full image data being passed:', imagesToPass);
+    console.log('📦 Processing complete - redirecting to next screen');
     onComplete(imagesToPass);
   };
 
@@ -363,14 +368,14 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
         .processing-container {
           width: 100vw;
           height: 100vh;
-          background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+          background: radial-gradient(circle at center, #0a0a1a 0%, #000 100%);
           display: flex;
           justify-content: center;
           align-items: center;
           flex-direction: column;
-          color: white;
+          color: #00FFFF;
           padding: 60px 20px;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-family: 'Orbitron', 'Courier New', monospace;
           position: relative;
           overflow: hidden;
         }
@@ -378,18 +383,16 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
         .processing-container::before {
           content: '';
           position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle at 30% 30%, rgba(255, 70, 150, 0.1), transparent),
-                      radial-gradient(circle at 70% 70%, rgba(70, 200, 255, 0.1), transparent);
-          animation: rotate 30s linear infinite;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.15), transparent),
+            radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.1), transparent),
+            linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.02) 50%, transparent 52%);
         }
 
-        @keyframes rotate {
-          to { transform: rotate(360deg); }
-        }
 
         .processing-content {
           max-width: 600px;
@@ -409,10 +412,11 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           width: 100%;
           height: 100%;
           border: 3px solid transparent;
-          border-top-color: #FF0080;
-          border-right-color: #7928CA;
+          border-top-color: #00FFFF;
+          border-right-color: #40E0D0;
           border-radius: 50%;
           animation: spin 1s linear infinite;
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
         }
 
         .processing-ring:nth-child(2) {
@@ -420,10 +424,11 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           height: 80%;
           top: 10%;
           left: 10%;
-          border-top-color: #7928CA;
-          border-right-color: #46C3FF;
+          border-top-color: #40E0D0;
+          border-right-color: #008B8B;
           animation-duration: 0.8s;
           animation-direction: reverse;
+          box-shadow: 0 0 15px rgba(64, 224, 208, 0.4);
         }
 
         .processing-ring:nth-child(3) {
@@ -431,9 +436,10 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           height: 60%;
           top: 20%;
           left: 20%;
-          border-top-color: #46C3FF;
-          border-right-color: #FF0080;
+          border-top-color: #008B8B;
+          border-right-color: #00FFFF;
           animation-duration: 0.6s;
+          box-shadow: 0 0 10px rgba(0, 139, 139, 0.3);
         }
 
         @keyframes spin {
@@ -443,19 +449,25 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
         .processing-text {
           font-size: 36px;
           margin-bottom: 15px;
-          font-weight: 300;
-          background: linear-gradient(135deg, #fff, #888);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          font-weight: 700;
+          color: #00FFFF;
+          text-transform: uppercase;
+          letter-spacing: 3px;
+          text-shadow: 
+            0 0 10px #00FFFF,
+            0 0 20px #00FFFF,
+            0 0 40px #00FFFF;
+          animation: neonPulse 2s ease-in-out infinite alternate;
         }
 
         .processing-status {
           font-size: 18px;
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           margin-bottom: 50px;
           min-height: 24px;
           animation: fadeIn 0.5s ease;
+          text-shadow: 0 0 5px #40E0D0;
+          letter-spacing: 1px;
         }
 
         @keyframes fadeIn {
@@ -463,13 +475,33 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           to { opacity: 1; }
         }
 
+        @keyframes neonPulse {
+          from {
+            text-shadow: 
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF;
+          }
+          to {
+            text-shadow: 
+              0 0 5px #00FFFF,
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF,
+              0 0 80px #00FFFF;
+          }
+        }
+
         .whatsapp-form {
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(0, 255, 255, 0.08);
+          backdrop-filter: blur(15px);
+          border: 2px solid rgba(0, 255, 255, 0.3);
           border-radius: 20px;
           padding: 40px;
           animation: slideUp 0.5s ease;
+          box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.2),
+            inset 0 0 30px rgba(0, 255, 255, 0.05);
         }
 
         @keyframes slideUp {
@@ -490,6 +522,11 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           align-items: center;
           justify-content: center;
           gap: 10px;
+          color: #00FFFF;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .whatsapp-icon {
@@ -505,8 +542,9 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
 
         .whatsapp-subtitle {
           font-size: 16px;
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           margin-bottom: 25px;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .phone-input-group {
@@ -517,14 +555,16 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
 
         .phone-prefix {
           padding: 15px 20px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: rgba(0, 255, 255, 0.1);
+          border: 1px solid rgba(0, 255, 255, 0.3);
           border-radius: 50px;
-          color: rgba(255, 255, 255, 0.7);
+          color: #00FFFF;
           font-size: 18px;
           display: flex;
           align-items: center;
           gap: 5px;
+          font-weight: 600;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
         }
 
         .flag-emoji {
@@ -534,37 +574,60 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
         .phone-input {
           flex: 1;
           padding: 15px 20px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: rgba(0, 255, 255, 0.1);
+          border: 1px solid rgba(0, 255, 255, 0.3);
           border-radius: 50px;
-          color: white;
+          color: #00FFFF;
           font-size: 18px;
           outline: none;
           transition: all 0.3s ease;
+          font-weight: 600;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .phone-input:focus {
-          border-color: #25D366;
-          box-shadow: 0 0 20px rgba(37, 211, 102, 0.2);
-          background: rgba(255, 255, 255, 0.15);
+          border-color: #00FFFF;
+          box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+          background: rgba(0, 255, 255, 0.15);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .phone-input::placeholder {
+          color: rgba(0, 255, 255, 0.5);
+        }
+
+        .phone-input:disabled {
+          background: rgba(255, 255, 255, 0.05);
           color: rgba(255, 255, 255, 0.4);
+          cursor: not-allowed;
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .phone-input:disabled::placeholder {
+          color: rgba(255, 255, 255, 0.3);
         }
 
         .whatsapp-submit {
-          padding: 15px 40px;
-          background: linear-gradient(135deg, #25D366, #128C7E);
-          color: white;
-          border: none;
+          padding: 15px 25px;
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          color: #000;
+          border: 2px solid #00FFFF;
           border-radius: 50px;
-          font-size: 16px;
-          font-weight: 600;
+          font-size: 14px;
+          font-weight: 700;
           cursor: pointer;
           transition: all 0.3s ease;
           position: relative;
           overflow: hidden;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          min-width: 130px;
+          white-space: nowrap;
         }
 
         .whatsapp-submit::before {
@@ -584,7 +647,10 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
 
         .whatsapp-submit:hover {
           transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+          box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.6),
+            0 10px 30px rgba(0, 255, 255, 0.3);
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         .whatsapp-submit:disabled {
@@ -592,9 +658,35 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           cursor: not-allowed;
         }
 
+        .whatsapp-submit.disabled {
+          background: rgba(255, 255, 255, 0.1) !important;
+          color: rgba(255, 255, 255, 0.4) !important;
+          border-color: rgba(255, 255, 255, 0.2) !important;
+          opacity: 0.6 !important;
+          cursor: not-allowed !important;
+          box-shadow: none !important;
+          transform: none !important;
+        }
+
+        .whatsapp-submit.disabled:hover {
+          transform: none;
+          box-shadow: none;
+        }
+
+        .whatsapp-submit.sending {
+          background: linear-gradient(135deg, #FFA500, #FF8C00) !important;
+          color: #000 !important;
+          border-color: #FFA500 !important;
+          animation: sendingPulse 1s ease-in-out infinite !important;
+          box-shadow: 0 0 25px rgba(255, 165, 0, 0.6) !important;
+        }
+
         .whatsapp-submit.sent {
-          background: linear-gradient(135deg, #46ff90, #25D366);
-          animation: pulse 0.5s ease;
+          background: linear-gradient(135deg, #00FF7F, #32CD32) !important;
+          color: #000 !important;
+          border-color: #00FF7F !important;
+          animation: pulse 0.5s ease !important;
+          box-shadow: 0 0 30px rgba(0, 255, 127, 0.8) !important;
         }
 
         @keyframes pulse {
@@ -603,19 +695,21 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           100% { transform: scale(1); }
         }
 
-        .skip-link {
-          color: rgba(255, 255, 255, 0.4);
-          text-decoration: none;
-          font-size: 14px;
-          margin-top: 15px;
-          display: inline-block;
-          transition: color 0.3s ease;
-          cursor: pointer;
+        @keyframes sendingPulse {
+          0% { 
+            transform: scale(1);
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
+          }
+          50% { 
+            transform: scale(1.02);
+            box-shadow: 0 0 40px rgba(255, 165, 0, 0.8);
+          }
+          100% { 
+            transform: scale(1);
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
+          }
         }
 
-        .skip-link:hover {
-          color: rgba(255, 255, 255, 0.6);
-        }
 
         .effects-preview {
           margin: 20px 0;
@@ -624,9 +718,10 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
 
         .effects-title {
           font-size: 14px;
-          color: rgba(255, 255, 255, 0.7);
+          color: #40E0D0;
           margin-bottom: 12px;
-          font-weight: 500;
+          font-weight: 600;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .effects-list {
@@ -637,14 +732,16 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
         }
 
         .effect-tag {
-          background: linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(121, 40, 202, 0.15));
-          border: 1px solid rgba(255, 0, 128, 0.3);
-          color: #FF0080;
+          background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(64, 224, 208, 0.15));
+          border: 1px solid rgba(0, 255, 255, 0.3);
+          color: #00FFFF;
           padding: 6px 12px;
           border-radius: 16px;
           font-size: 12px;
           font-weight: 600;
           animation: pulse 2s ease-in-out infinite;
+          text-shadow: 0 0 5px #00FFFF;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .effect-tag:nth-child(2n) {
@@ -655,33 +752,16 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           animation-delay: 1s;
         }
 
-        .progress-dots {
-          display: flex;
-          gap: 10px;
-          justify-content: center;
-          margin-top: 40px;
-        }
 
-        .dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.2);
-          transition: all 0.3s ease;
-        }
-
-        .dot.active {
-          background: linear-gradient(135deg, #FF0080, #7928CA);
-          transform: scale(1.2);
-        }
-
-        .skyjumper-logo {
+        .pikcha-logo {
           position: absolute;
           bottom: 30px;
+          left: 50%;
+          transform: translateX(-50%);
           display: flex;
           align-items: center;
           gap: 10px;
-          opacity: 0.5;
+          opacity: 0.8;
         }
 
         .logo-text {
@@ -691,12 +771,14 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           font-weight: bold;
         }
 
-        .logo-sky {
-          color: #4A90E2;
+        .logo-pikcha {
+          color: #00FFFF;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
-        .logo-jumper {
-          color: #FF8C42;
+        .logo-ai {
+          color: #40E0D0;
+          text-shadow: 0 0 8px #40E0D0;
         }
 
         /* Responsive Design */
@@ -732,12 +814,12 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
           <div className="processing-ring"></div>
         </div>
         
-        <div className="processing-text">Processing Your Photos</div>
+        <div className="processing-text">NEURAL MATRIX ACTIVE</div>
         <div className="processing-status">{processingStatus}</div>
         
         {enabledEffects.length > 0 && (
           <div className="effects-preview">
-            <p className="effects-title">Applying Effects:</p>
+            <p className="effects-title">Digital Enhancement Protocols:</p>
             <div className="effects-list">
               {enabledEffects.map((effect, index) => (
                 <span key={effect.id} className="effect-tag">
@@ -752,24 +834,22 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
         <div className="whatsapp-form">
           {isProcessing && (
             <div style={{
-              background: 'rgba(255, 165, 0, 0.2)',
-              border: '1px solid rgba(255, 165, 0, 0.5)',
-              borderRadius: '10px',
-              padding: '10px',
+              background: 'rgba(0, 255, 255, 0.15)',
+              border: '1px solid rgba(0, 255, 255, 0.3)',
+              borderRadius: '12px',
+              padding: '12px',
               marginBottom: '20px',
-              color: '#FFA500',
+              color: '#00FFFF',
               fontSize: '14px',
-              textAlign: 'center'
+              textAlign: 'center',
+              textShadow: '0 0 8px #00FFFF',
+              boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)'
             }}>
-              🎨 Applying AI effects to your photos... Please wait for better results!
+              Neural networks processing your digital identity... Optimizing for peak performance!
             </div>
           )}
           <div className="whatsapp-title">
-            <svg className="whatsapp-icon" viewBox="0 0 24 24" fill="#25D366">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5.536 14.911c-.267.751-.994 1.399-1.636 1.581-.422.12-.963.215-2.795-.599-2.348-.044-4.213-1.572-5.643-3.697-1.242-1.846-1.817-3.523-.663-5.348.327-.519.69-.74 1.097-.756l.566-.01c.379 0 .636.271.79.653.224.555.761 1.861.828 1.998.066.136.111.294.017.472-.094.178-.14.289-.281.446-.14.157-.295.35-.422.472-.132.122-.27.252-.116.496.154.244.688 1.133 1.476 1.835 1.018.905 1.878 1.187 2.145 1.321.267.133.423.111.577-.067.154-.178.659-.768.835-1.034.176-.267.353-.223.591-.134.24.089 1.518.716 1.779.847.26.13.434.198.497.305.063.108.063.621-.203 1.372z"/>
-            </svg>
-            Get Soft Copy via WhatsApp
+            Digital Copy Transfer
           </div>
           
           <p className="whatsapp-subtitle">Enter your number to receive digital photos</p>
@@ -782,63 +862,35 @@ const ProcessingScreen = ({ capturedImages, onComplete }) => {
             <input 
               type="tel" 
               className="phone-input" 
-              placeholder="98765 43210"
+              placeholder={isWhatsAppEnabled ? "98765 43210" : "Processing images..."}
               value={phoneNumber}
               onChange={handlePhoneChange}
               maxLength="11"
               pattern="[0-9]{5} [0-9]{5}"
+              disabled={!isWhatsAppEnabled}
               onKeyPress={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && isWhatsAppEnabled) {
                   handlePhoneSubmit(e);
                 }
               }}
             />
             <button 
               onClick={handlePhoneSubmit}
-              className={`whatsapp-submit ${isPhoneSent ? 'sent' : ''}`}
-              disabled={isPhoneSent}
+              className={`whatsapp-submit ${isPhoneSent ? 'sent' : isSendingWhatsApp ? 'sending' : !isWhatsAppEnabled ? 'disabled' : ''}`}
+              disabled={!isWhatsAppEnabled || isPhoneSent || isSendingWhatsApp}
             >
-              {isPhoneSent ? '✓ Sent' : 'Send'}
+              {!isWhatsAppEnabled ? '...' : isPhoneSent ? 'Sent' : isSendingWhatsApp ? 'Sending...' : 'Send Photos'}
             </button>
           </div>
           
-          <a href="#" className="skip-link" onClick={(e) => {
-            e.preventDefault();
-            console.log('Skipped WhatsApp');
-            handleContinue();
-          }}>
-            Skip this step →
-          </a>
         </div>
 
-        <div className="progress-dots">
-          <div className="dot active"></div>
-          <div className="dot active"></div>
-          <div className="dot active"></div>
-          <div className="dot"></div>
-          <div className="dot"></div>
-        </div>
       </div>
 
-      <div className="skyjumper-logo">
-        <svg viewBox="0 0 60 60" style={{ width: '40px', height: '40px' }}>
-          <circle cx="30" cy="20" r="8" fill="#FF8C42" stroke="#E57A2E" strokeWidth="1"/>
-          <circle cx="30" cy="30" r="6" fill="#FF8C42" stroke="#E57A2E" strokeWidth="1"/>
-          <circle cx="27" cy="19" r="1" fill="white"/>
-          <circle cx="33" cy="19" r="1" fill="white"/>
-          <circle cx="27" cy="19" r="0.8" fill="black"/>
-          <circle cx="33" cy="19" r="0.8" fill="black"/>
-          <path d="M 25 22 Q 30 24 35 22" stroke="black" strokeWidth="0.8" fill="none"/>
-          <path d="M 22 28 Q 15 26 13 30" stroke="#FF8C42" strokeWidth="2" fill="none" strokeLinecap="round"/>
-          <path d="M 38 28 Q 45 26 47 30" stroke="#FF8C42" strokeWidth="2" fill="none" strokeLinecap="round"/>
-          <path d="M 25 35 L 23 42" stroke="#FF8C42" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M 35 35 L 37 42" stroke="#FF8C42" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M 22 32 Q 10 32 8 38" stroke="#FF8C42" strokeWidth="2" fill="none" strokeLinecap="round"/>
-          <path d="M 10 50 Q 30 45 50 50" stroke="#FFD700" strokeWidth="3" fill="none" strokeLinecap="round"/>
-        </svg>
+      <div className="pikcha-logo">
         <div className="logo-text">
-          <span className="logo-sky">SKY</span>
-          <span className="logo-jumper">JUMPER</span>
+          <span className="logo-pikcha">PIKCHA</span>
+          <span className="logo-ai">.AI</span>
         </div>
       </div>
     </div>

@@ -22,31 +22,26 @@ const WelcomeScreen = ({ onStart }) => {
         .welcome-container {
           width: 100vw;
           height: 100vh;
-          background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+          background: radial-gradient(circle at center, #0a0a1a 0%, #000 100%);
           display: flex;
           position: relative;
           overflow: hidden;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-family: 'Orbitron', 'Courier New', monospace;
         }
 
         .welcome-container::before {
           content: '';
           position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: conic-gradient(from 0deg at 50% 50%, 
-              rgba(255, 70, 150, 0.1), 
-              rgba(120, 70, 255, 0.1), 
-              rgba(70, 200, 255, 0.1), 
-              rgba(255, 70, 150, 0.1));
-          animation: rotate 20s linear infinite;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+            linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.02) 50%, transparent 52%);
         }
 
-        @keyframes rotate {
-          to { transform: rotate(360deg); }
-        }
 
         .welcome-left {
           flex: 1;
@@ -68,21 +63,25 @@ const WelcomeScreen = ({ onStart }) => {
 
         .welcome-title {
           font-size: 72px;
-          font-weight: 300;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 20px;
-          letter-spacing: -2px;
-          background: linear-gradient(135deg, #fff, #888);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: slideInLeft 1s ease;
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          text-shadow: 
+            0 0 10px #00FFFF,
+            0 0 20px #00FFFF,
+            0 0 40px #00FFFF;
+          animation: slideInLeft 1s ease, neonPulse 2s ease-in-out infinite alternate;
         }
 
         .welcome-subtitle {
           font-size: 24px;
-          color: rgba(255,255,255,0.6);
+          color: #40E0D0;
           margin-bottom: 50px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          text-shadow: 0 0 5px #40E0D0;
           animation: slideInLeft 1s ease 0.2s both;
         }
 
@@ -97,22 +96,42 @@ const WelcomeScreen = ({ onStart }) => {
           }
         }
 
+        @keyframes neonPulse {
+          from {
+            text-shadow: 
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF;
+          }
+          to {
+            text-shadow: 
+              0 0 5px #00FFFF,
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF,
+              0 0 80px #00FFFF;
+          }
+        }
+
         .start-btn {
-          background: linear-gradient(135deg, #FF0080, #7928CA);
-          color: white;
-          border: none;
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          color: #000;
+          border: 2px solid #00FFFF;
           padding: 25px 80px;
           font-size: 20px;
-          font-weight: 600;
-          border-radius: 100px;
+          font-weight: 700;
+          border-radius: 50px;
           cursor: pointer;
           transition: all 0.3s ease;
           position: relative;
           overflow: hidden;
           animation: slideInLeft 1s ease 0.4s both;
           text-transform: uppercase;
-          letter-spacing: 2px;
+          letter-spacing: 3px;
           width: fit-content;
+          box-shadow: 
+            0 0 20px rgba(0, 255, 255, 0.5),
+            inset 0 0 20px rgba(0, 255, 255, 0.1);
         }
 
         .start-btn::before {
@@ -122,7 +141,7 @@ const WelcomeScreen = ({ onStart }) => {
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
           transition: left 0.5s ease;
         }
 
@@ -132,7 +151,11 @@ const WelcomeScreen = ({ onStart }) => {
 
         .start-btn:hover {
           transform: translateY(-3px);
-          box-shadow: 0 20px 40px rgba(255, 0, 128, 0.3);
+          box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.8),
+            0 10px 40px rgba(0, 255, 255, 0.4),
+            inset 0 0 20px rgba(0, 255, 255, 0.2);
+          text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .start-btn:active {
@@ -150,71 +173,110 @@ const WelcomeScreen = ({ onStart }) => {
         }
 
         .neon-camera {
-          width: 250px;
-          height: 250px;
+          width: 300px;
+          height: 300px;
           position: relative;
-          animation: float 4s ease-in-out infinite;
+          animation: cyberFloat 4s ease-in-out infinite;
         }
 
-        @keyframes float {
+        @keyframes cyberFloat {
           0%, 100% { 
-            transform: translateY(0) scale(1); 
+            transform: translateY(0) scale(1) rotateZ(0deg); 
           }
           50% { 
-            transform: translateY(-20px) scale(1.05); 
+            transform: translateY(-20px) scale(1.05) rotateZ(2deg); 
           }
         }
 
         .neon-camera-body {
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, rgba(255, 70, 150, 0.2), rgba(120, 70, 255, 0.2));
-          border: 2px solid rgba(255, 70, 150, 0.5);
-          border-radius: 30px;
+          background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(64, 224, 208, 0.2));
+          border: 3px solid #00FFFF;
+          border-radius: 20px;
           display: flex;
           justify-content: center;
           align-items: center;
           position: relative;
-          box-shadow: 0 0 50px rgba(255, 70, 150, 0.5),
-                      inset 0 0 50px rgba(120, 70, 255, 0.2);
+          box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.6),
+            0 0 60px rgba(0, 255, 255, 0.3),
+            inset 0 0 30px rgba(0, 255, 255, 0.1);
+          animation: neonBorder 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonBorder {
+          from {
+            border-color: #00FFFF;
+            box-shadow: 
+              0 0 30px rgba(0, 255, 255, 0.6),
+              0 0 60px rgba(0, 255, 255, 0.3),
+              inset 0 0 30px rgba(0, 255, 255, 0.1);
+          }
+          to {
+            border-color: #40E0D0;
+            box-shadow: 
+              0 0 40px rgba(64, 224, 208, 0.8),
+              0 0 80px rgba(64, 224, 208, 0.4),
+              inset 0 0 40px rgba(64, 224, 208, 0.2);
+          }
         }
 
         .neon-camera-lens {
-          width: 120px;
-          height: 120px;
-          border: 3px solid rgba(70, 200, 255, 0.8);
+          width: 150px;
+          height: 150px;
+          border: 4px solid #00FFFF;
           border-radius: 50%;
           position: relative;
-          background: radial-gradient(circle, rgba(70, 200, 255, 0.2), transparent);
-          box-shadow: 0 0 30px rgba(70, 200, 255, 0.6);
+          background: radial-gradient(circle, rgba(0, 255, 255, 0.2), transparent);
+          box-shadow: 
+            0 0 40px rgba(0, 255, 255, 0.8),
+            inset 0 0 20px rgba(0, 255, 255, 0.3);
+          animation: lensPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes lensPulse {
+          0%, 100% {
+            box-shadow: 
+              0 0 40px rgba(0, 255, 255, 0.8),
+              inset 0 0 20px rgba(0, 255, 255, 0.3);
+          }
+          50% {
+            box-shadow: 
+              0 0 60px rgba(0, 255, 255, 1),
+              inset 0 0 30px rgba(0, 255, 255, 0.5);
+          }
         }
 
         .neon-camera-lens::after {
           content: '';
           position: absolute;
-          top: 20%;
-          left: 20%;
-          width: 30%;
-          height: 30%;
-          background: rgba(255, 255, 255, 0.6);
+          top: 25%;
+          left: 25%;
+          width: 25%;
+          height: 25%;
+          background: rgba(255, 255, 255, 0.8);
           border-radius: 50%;
-          filter: blur(5px);
+          filter: blur(3px);
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
         }
 
-        .skyjumper-logo {
+        .pikcha-logo {
           position: absolute;
           bottom: 40px;
           left: 80px;
           display: flex;
           align-items: center;
           gap: 15px;
-          opacity: 0.7;
+          opacity: 0.9;
           animation: slideInLeft 1s ease 0.6s both;
         }
 
-        .logo-monkey {
+        .logo-pikcha {
           width: 50px;
           height: 50px;
+          border-radius: 8px;
+          filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.4));
         }
 
         .logo-text {
@@ -224,12 +286,14 @@ const WelcomeScreen = ({ onStart }) => {
           font-weight: bold;
         }
 
-        .logo-sky {
-          color: #4A90E2;
+        .logo-pikcha-text {
+          color: #00FFFF;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
-        .logo-jumper {
-          color: #FF8C42;
+        .logo-ai-text {
+          color: #40E0D0;
+          text-shadow: 0 0 8px #40E0D0;
         }
 
         /* Responsive Design */
@@ -276,7 +340,7 @@ const WelcomeScreen = ({ onStart }) => {
             height: 200px;
           }
           
-          .skyjumper-logo {
+          .pikcha-logo {
             left: 50%;
             transform: translateX(-50%);
           }
@@ -285,10 +349,10 @@ const WelcomeScreen = ({ onStart }) => {
 
       <div className="welcome-left">
         <h1 className="welcome-title">
-          SkyJumper<br />Photo Booth
+          PIKCHA.AI<br />Photo Booth
         </h1>
         <p className="welcome-subtitle">
-          Capture magical moments with style
+          THE AI PHOTO TRANSFORMATION
         </p>
         <button 
           className={`start-btn ${isStarting ? 'starting' : ''}`}
@@ -297,32 +361,10 @@ const WelcomeScreen = ({ onStart }) => {
           Start Session
         </button>
         
-        <div className="skyjumper-logo">
-          <svg className="logo-monkey" viewBox="0 0 100 100">
-            {/* Monkey character */}
-            <circle cx="50" cy="35" r="15" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-            <circle cx="50" cy="50" r="12" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-            {/* Eyes */}
-            <circle cx="45" cy="33" r="2" fill="white"/>
-            <circle cx="55" cy="33" r="2" fill="white"/>
-            <circle cx="45" cy="33" r="1.5" fill="black"/>
-            <circle cx="55" cy="33" r="1.5" fill="black"/>
-            {/* Smile */}
-            <path d="M 43 38 Q 50 41 57 38" stroke="black" strokeWidth="1.5" fill="none"/>
-            {/* Arms */}
-            <path d="M 38 48 Q 28 45 25 52" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-            <path d="M 62 48 Q 72 45 75 52" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-            {/* Legs */}
-            <path d="M 43 58 L 40 68" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M 57 58 L 60 68" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-            {/* Tail */}
-            <path d="M 38 54 Q 20 54 18 62" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-            {/* Arc under monkey */}
-            <path d="M 15 80 Q 50 70 85 80" stroke="#FFD700" strokeWidth="5" fill="none" strokeLinecap="round"/>
-          </svg>
+        <div className="pikcha-logo">
           <div className="logo-text">
-            <span className="logo-sky">SKY</span>
-            <span className="logo-jumper">JUMPER</span>
+            <span className="logo-pikcha-text">PIKCHA</span>
+            <span className="logo-ai-text">.AI</span>
           </div>
         </div>
       </div>

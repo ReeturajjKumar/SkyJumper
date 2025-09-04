@@ -40,17 +40,17 @@ const ThankYouScreen = ({ onNewSession }) => {
         .thankyou-container {
           width: 100vw;
           height: 100vh;
-          background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+          background: radial-gradient(circle at center, #0a0a1a 0%, #000 100%);
           display: flex;
           justify-content: center;
           align-items: center;
           flex-direction: column;
-          color: white;
+          color: #00FFFF;
           text-align: center;
           padding: 60px 20px;
           position: relative;
           overflow: hidden;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-family: 'Orbitron', 'Courier New', monospace;
         }
 
         .thankyou-container::before {
@@ -58,20 +58,12 @@ const ThankYouScreen = ({ onNewSession }) => {
           position: absolute;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle at center, rgba(70, 255, 150, 0.15), transparent);
-          animation: pulse 4s ease-in-out infinite;
+          background: 
+            radial-gradient(circle at 30% 40%, rgba(0, 255, 255, 0.2), transparent),
+            radial-gradient(circle at 70% 60%, rgba(64, 224, 208, 0.15), transparent),
+            linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.03) 50%, transparent 52%);
         }
 
-        @keyframes pulse {
-          0%, 100% { 
-            transform: scale(1) rotate(0deg); 
-            opacity: 0.5; 
-          }
-          50% { 
-            transform: scale(1.3) rotate(180deg); 
-            opacity: 0.3; 
-          }
-        }
 
         .confetti-container {
           position: absolute;
@@ -86,14 +78,8 @@ const ThankYouScreen = ({ onNewSession }) => {
           width: 10px;
           height: 10px;
           top: -10px;
-          animation: fall linear infinite;
         }
 
-        @keyframes fall {
-          to {
-            transform: translateY(110vh) rotate(360deg);
-          }
-        }
 
         .thankyou-content {
           z-index: 3;
@@ -118,19 +104,29 @@ const ThankYouScreen = ({ onNewSession }) => {
           position: absolute;
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, #46ff90, #25D366);
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          border: 2px solid #00FFFF;
           border-radius: 50%;
           animation: iconPulse 2s ease-in-out infinite;
+          box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.6),
+            inset 0 0 30px rgba(0, 255, 255, 0.2);
         }
 
         @keyframes iconPulse {
           0%, 100% {
             transform: scale(1);
-            box-shadow: 0 0 0 0 rgba(70, 255, 144, 0.5);
+            box-shadow: 
+              0 0 30px rgba(0, 255, 255, 0.6),
+              inset 0 0 30px rgba(0, 255, 255, 0.2),
+              0 0 0 0 rgba(0, 255, 255, 0.5);
           }
           50% {
             transform: scale(1.05);
-            box-shadow: 0 0 0 20px rgba(70, 255, 144, 0);
+            box-shadow: 
+              0 0 50px rgba(0, 255, 255, 0.8),
+              inset 0 0 50px rgba(0, 255, 255, 0.3),
+              0 0 0 30px rgba(0, 255, 255, 0);
           }
         }
 
@@ -161,20 +157,22 @@ const ThankYouScreen = ({ onNewSession }) => {
         .success-icon svg {
           width: 100px;
           height: 100px;
-          fill: white;
-          filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+          fill: #000;
+          filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
         }
 
         .thankyou-title {
           font-size: 64px;
           margin-bottom: 20px;
-          font-weight: 300;
-          letter-spacing: -2px;
-          background: linear-gradient(135deg, #46ff90, #25D366, #46C3FF);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: titleSlide 0.8s ease 0.3s both;
+          font-weight: 700;
+          letter-spacing: 3px;
+          color: #00FFFF;
+          text-transform: uppercase;
+          text-shadow: 
+            0 0 10px #00FFFF,
+            0 0 20px #00FFFF,
+            0 0 40px #00FFFF;
+          animation: titleSlide 0.8s ease 0.3s both, neonPulse 2s ease-in-out infinite alternate;
         }
 
         @keyframes titleSlide {
@@ -188,11 +186,30 @@ const ThankYouScreen = ({ onNewSession }) => {
           }
         }
 
+        @keyframes neonPulse {
+          from {
+            text-shadow: 
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF;
+          }
+          to {
+            text-shadow: 
+              0 0 5px #00FFFF,
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF,
+              0 0 80px #00FFFF;
+          }
+        }
+
         .thankyou-message {
           font-size: 22px;
-          color: rgba(255, 255, 255, 0.8);
+          color: #40E0D0;
           margin-bottom: 20px;
           animation: messageSlide 0.8s ease 0.5s both;
+          text-shadow: 0 0 5px #40E0D0;
+          letter-spacing: 1px;
         }
 
         @keyframes messageSlide {
@@ -309,7 +326,7 @@ const ThankYouScreen = ({ onNewSession }) => {
           border-color: rgba(255, 255, 255, 0.3);
         }
 
-        .skyjumper-celebration {
+        .pikcha-celebration {
           position: absolute;
           bottom: 40px;
           display: flex;
@@ -323,15 +340,16 @@ const ThankYouScreen = ({ onNewSession }) => {
           50% { transform: translateY(-10px); }
         }
 
-        .celebration-monkey {
-          width: 60px;
-          height: 60px;
-          animation: monkeyDance 1s ease-in-out infinite alternate;
+        .celebration-text {
+          font-size: 20px;
+          font-weight: 700;
+          letter-spacing: 2px;
+          animation: textDance 1s ease-in-out infinite alternate;
         }
 
-        @keyframes monkeyDance {
-          from { transform: rotate(-10deg); }
-          to { transform: rotate(10deg); }
+        @keyframes textDance {
+          from { transform: rotate(-2deg) scale(1); }
+          to { transform: rotate(2deg) scale(1.05); }
         }
 
         .celebration-text {
@@ -341,12 +359,14 @@ const ThankYouScreen = ({ onNewSession }) => {
           font-weight: bold;
         }
 
-        .celebration-sky {
-          color: #4A90E2;
+        .celebration-pikcha {
+          color: #00FFFF;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
-        .celebration-jumper {
-          color: #FF8C42;
+        .celebration-ai {
+          color: #40E0D0;
+          text-shadow: 0 0 10px #40E0D0;
         }
 
         .decorative-circles {
@@ -367,7 +387,6 @@ const ThankYouScreen = ({ onNewSession }) => {
           height: 300px;
           top: -150px;
           left: -150px;
-          animation: rotate 20s linear infinite;
         }
 
         .circle:nth-child(2) {
@@ -375,7 +394,6 @@ const ThankYouScreen = ({ onNewSession }) => {
           height: 400px;
           bottom: -200px;
           right: -200px;
-          animation: rotate 25s linear infinite reverse;
         }
 
         .circle:nth-child(3) {
@@ -384,47 +402,29 @@ const ThankYouScreen = ({ onNewSession }) => {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          animation: rotate 15s linear infinite;
         }
 
-        @keyframes rotate {
-          to { transform: rotate(360deg); }
-        }
 
         .sparkle {
           position: absolute;
           color: white;
-          animation: sparkle 3s ease-in-out infinite;
         }
 
         .sparkle:nth-child(1) {
           top: 20%;
           left: 20%;
-          animation-delay: 0s;
         }
 
         .sparkle:nth-child(2) {
           top: 30%;
           right: 25%;
-          animation-delay: 1s;
         }
 
         .sparkle:nth-child(3) {
           bottom: 30%;
           left: 30%;
-          animation-delay: 2s;
         }
 
-        @keyframes sparkle {
-          0%, 100% {
-            opacity: 0;
-            transform: scale(0);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -508,8 +508,8 @@ const ThankYouScreen = ({ onNewSession }) => {
           </div>
         </div>
 
-        <h1 className="thankyou-title">Thank You!</h1>
-        <p className="thankyou-message">Your photos have been printed successfully</p>
+        <h1 className="thankyou-title">Mission Complete!</h1>
+        <p className="thankyou-message">AI transformation complete - Digital identity processed</p>
 
         <div className="session-info">
           <div className="info-item">
@@ -534,30 +534,10 @@ const ThankYouScreen = ({ onNewSession }) => {
         </button>
       </div>
 
-      <div className="skyjumper-celebration">
-        <svg className="celebration-monkey" viewBox="0 0 100 100">
-          {/* Happy monkey character */}
-          <circle cx="50" cy="35" r="15" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-          <circle cx="50" cy="50" r="12" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-          {/* Happy eyes */}
-          <path d="M 42 32 Q 45 30 48 32" stroke="black" strokeWidth="1.5" fill="none"/>
-          <path d="M 52 32 Q 55 30 58 32" stroke="black" strokeWidth="1.5" fill="none"/>
-          {/* Big smile */}
-          <path d="M 40 37 Q 50 44 60 37" stroke="black" strokeWidth="2" fill="none"/>
-          {/* Arms up in celebration */}
-          <path d="M 38 45 Q 25 35 20 30" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          <path d="M 62 45 Q 75 35 80 30" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          {/* Jumping legs */}
-          <path d="M 43 58 L 38 65" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-          <path d="M 57 58 L 62 65" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-          {/* Tail */}
-          <path d="M 38 54 Q 20 54 18 62" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          {/* Arc under monkey */}
-          <path d="M 15 85 Q 50 75 85 85" stroke="#FFD700" strokeWidth="5" fill="none" strokeLinecap="round"/>
-        </svg>
+      <div className="pikcha-celebration">
         <div className="celebration-text">
-          <span className="celebration-sky">SKY</span>
-          <span className="celebration-jumper">JUMPER</span>
+          <span className="celebration-pikcha">PIKCHA</span>
+          <span className="celebration-ai">.AI</span>
         </div>
       </div>
     </div>

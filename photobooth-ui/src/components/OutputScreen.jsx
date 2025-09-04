@@ -109,13 +109,157 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
   const handlePrint = () => {
     setIsPrinting(true);
     
-    // Simulate printing process
-    console.log('Printing photo strip...');
+    console.log('🖨️ Starting print process...');
     
-    // Navigate to thank you screen after 2 seconds
-    setTimeout(() => {
-      onComplete();
-    }, 2000);
+    try {
+      // Create print-specific content
+      const printContent = document.querySelector('.photo-strip-container');
+      const originalContents = document.body.innerHTML;
+      
+      // Create print window content
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Photo Strip - SKY JUMPER</title>
+            <style>
+              * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+              }
+              
+              @page {
+                margin: 0.3in;
+                size: 6in 4in; /* 3x2 ratio landscape paper */
+              }
+              
+              body {
+                font-family: 'Arial', sans-serif;
+                background: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 5px;
+              }
+              
+              .print-container {
+                width: 5.4in; /* Use most of the 6in width */
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                padding: 15px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              }
+              
+              .print-photo-strip {
+                display: flex;
+                flex-direction: row; /* Horizontal layout for landscape paper */
+                gap: 10px;
+                margin-bottom: 10px;
+                justify-content: space-between;
+              }
+              
+              .print-photo {
+                width: 1.6in; /* Each photo takes about 1/3 of width */
+                height: 2.4in; /* Portrait aspect ratio */
+                border-radius: 5px;
+                object-fit: cover;
+                border: 1px solid #eee;
+                flex-shrink: 0;
+              }
+              
+              .print-photo.landscape-photo {
+                width: 1.8in; /* Slightly wider for landscape images */
+                height: 1.2in; /* Landscape aspect ratio */
+                object-fit: contain; /* Show full landscape image */
+                background: #f9f9f9;
+              }
+              
+              .print-logo {
+                text-align: center;
+                font-size: 14px;
+                font-weight: bold;
+                color: #333;
+                margin-top: 10px;
+                border-top: 1px solid #ddd;
+                padding-top: 10px;
+              }
+              
+              .print-logo-pikcha {
+                color: #00FFFF;
+              }
+              
+              .print-logo-ai {
+                color: #40E0D0;
+              }
+              
+              @media print {
+                body {
+                  background: white !important;
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                }
+                
+                .print-container {
+                  box-shadow: none;
+                  border: none;
+                  margin: 0;
+                  padding: 15px;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="print-container">
+              <div class="print-photo-strip">
+                ${Array.from(document.querySelectorAll('.strip-photo img')).map((img, index) => {
+                  // Detect if image is landscape or portrait
+                  const isLandscape = img.naturalWidth > img.naturalHeight;
+                  const photoClass = isLandscape ? 'print-photo landscape-photo' : 'print-photo';
+                  return `<img src="${img.src}" class="${photoClass}" alt="Photo ${index + 1}" />`;
+                }).join('')}
+              </div>
+              <div class="print-logo">
+                <span class="print-logo-pikcha">PIKCHA</span>
+                <span class="print-logo-ai">.AI</span>
+              </div>
+            </div>
+          </body>
+        </html>
+      `);
+      
+      printWindow.document.close();
+      
+      // Wait for images to load, then print
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+        
+        // Close print window after printing
+        setTimeout(() => {
+          printWindow.close();
+        }, 1000);
+        
+        console.log('✅ Print dialog opened successfully');
+        
+        // Navigate to thank you screen after printing
+        setTimeout(() => {
+          onComplete();
+        }, 2000);
+      }, 500);
+      
+    } catch (error) {
+      console.error('❌ Print error:', error);
+      
+      // Fallback: try browser print
+      window.print();
+      
+      setTimeout(() => {
+        onComplete();
+      }, 2000);
+    }
   };
 
   return (
@@ -135,13 +279,13 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
         .output-container {
           width: 100vw;
           height: 100vh;
-          background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+          background: radial-gradient(circle at center, #0a0a1a 0%, #000 100%);
           padding: 30px 20px;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-family: 'Orbitron', 'Courier New', monospace;
           position: relative;
           overflow-x: hidden;
           box-sizing: border-box;
@@ -154,15 +298,12 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
           left: 0;
           right: 0;
           bottom: 0;
-          background: radial-gradient(circle at 20% 50%, rgba(255, 70, 150, 0.1), transparent),
-                      radial-gradient(circle at 80% 80%, rgba(70, 200, 255, 0.1), transparent);
-          animation: float 20s ease-in-out infinite;
+          background: 
+            radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.15), transparent),
+            radial-gradient(circle at 80% 80%, rgba(64, 224, 208, 0.1), transparent),
+            linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.02) 50%, transparent 52%);
         }
 
-        @keyframes float {
-          0%, 100% { transform: scale(1) rotate(0deg); }
-          50% { transform: scale(1.1) rotate(5deg); }
-        }
 
         .output-header {
           text-align: center;
@@ -184,18 +325,40 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
 
         .output-title {
           font-size: 36px;
-          font-weight: 300;
-          background: linear-gradient(135deg, #FF0080, #7928CA, #46C3FF);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 10px;
-          letter-spacing: -1px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          text-shadow: 
+            0 0 10px #00FFFF,
+            0 0 20px #00FFFF,
+            0 0 40px #00FFFF;
+          animation: neonPulse 3s ease-in-out infinite alternate;
         }
 
         .output-subtitle {
           font-size: 18px;
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
+          text-shadow: 0 0 5px #40E0D0;
+          letter-spacing: 1px;
+        }
+
+        @keyframes neonPulse {
+          from {
+            text-shadow: 
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF;
+          }
+          to {
+            text-shadow: 
+              0 0 5px #00FFFF,
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF,
+              0 0 80px #00FFFF;
+          }
         }
 
         .photo-strip-wrapper {
@@ -208,14 +371,17 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
         }
 
         .photo-strip-container {
-          width: 1050px; /* Reduced width for better proportions */
-          max-width: 95vw; /* Ensure it doesn't exceed viewport width */
+          width: 1050px;
+          max-width: 95vw;
           margin: 0 auto;
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 50%, rgba(240, 147, 251, 0.3) 100%);
+          background: linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(64, 224, 208, 0.2) 50%, rgba(0, 139, 139, 0.15) 100%);
+          border: 2px solid #00FFFF;
           border-radius: 15px;
           padding: 40px;
-          box-shadow: 0 30px 80px rgba(0,0,0,0.6),
-                      0 0 0 1px rgba(255,255,255,0.1);
+          box-shadow: 
+            0 0 50px rgba(0, 255, 255, 0.4),
+            0 30px 80px rgba(0, 0, 0, 0.8),
+            inset 0 0 30px rgba(0, 255, 255, 0.1);
           position: relative;
           transform-style: preserve-3d;
           transition: transform 0.6s ease;
@@ -267,10 +433,19 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
 
         /* Landscape images - make them more square to show all people */
         .strip-photo.landscape {
-          height: 280px; /* Shorter height for landscape images */
-          width: 350px; /* Reduced width to fit better */
-          flex: 0 0 350px; /* Don't flex, maintain fixed width */
-          margin: 0 5px; /* Reduced spacing */
+          height: 240px; /* Further reduced height for landscape images */
+          width: 300px; /* Further reduced width to fit perfectly */
+          flex: 0 0 300px; /* Don't flex, maintain fixed width */
+          margin: 0 8px; /* Slightly more spacing */
+        }
+
+        /* Fix gaps for first and last landscape images */
+        .strip-photo.landscape:first-child {
+          margin-left: 0; /* Remove left margin from first image */
+        }
+
+        .strip-photo.landscape:last-child {
+          margin-right: 0; /* Remove right margin from last image */
         }
 
         /* Portrait images - keep original tall format */
@@ -373,15 +548,17 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
           gap: 10px;
         }
 
-        .logo-monkey-svg {
-          width: 40px;
-          height: 40px;
-          animation: monkeyJump 3s ease-in-out infinite;
+        .logo-pikcha-text {
+          font-size: 24px;
+          font-weight: 700;
+          color: #00FFFF;
+          text-shadow: 0 0 10px #00FFFF;
+          animation: textGlow 3s ease-in-out infinite;
         }
 
-        @keyframes monkeyJump {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+        @keyframes textGlow {
+          0%, 100% { text-shadow: 0 0 10px #00FFFF; }
+          50% { text-shadow: 0 0 20px #00FFFF, 0 0 30px #00FFFF; }
         }
 
         .strip-logo-text {
@@ -393,12 +570,14 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
           letter-spacing: 1px;
         }
 
-        .logo-sky {
-          color: #4A90E2;
+        .logo-pikcha-name {
+          color: #00FFFF;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
-        .logo-jumper {
-          color: #FF8C42;
+        .logo-ai-name {
+          color: #40E0D0;
+          text-shadow: 0 0 8px #40E0D0;
         }
 
         .print-section {
@@ -419,22 +598,25 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
         }
 
         .print-btn {
-          background: linear-gradient(135deg, #FF0080, #7928CA);
-          color: white;
-          border: none;
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          color: #000;
+          border: 2px solid #00FFFF;
           padding: 25px 80px;
           font-size: 20px;
-          font-weight: 600;
+          font-weight: 700;
           border-radius: 100px;
           cursor: pointer;
           transition: all 0.3s ease;
           position: relative;
           overflow: hidden;
           text-transform: uppercase;
-          letter-spacing: 2px;
+          letter-spacing: 3px;
           display: inline-flex;
           align-items: center;
           gap: 15px;
+          box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.5),
+            inset 0 0 20px rgba(0, 255, 255, 0.1);
         }
 
         .print-btn::before {
@@ -454,7 +636,11 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
 
         .print-btn:hover {
           transform: translateY(-3px);
-          box-shadow: 0 20px 40px rgba(255, 0, 128, 0.3);
+          box-shadow: 
+            0 0 40px rgba(0, 255, 255, 0.8),
+            0 20px 40px rgba(0, 255, 255, 0.4),
+            inset 0 0 30px rgba(0, 255, 255, 0.2);
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         .print-btn:disabled {
@@ -627,12 +813,12 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
         <div className="badge-icon">
           <span style={{ color: 'white', fontSize: '12px' }}>✓</span>
         </div>
-        Ready to Print
+        Processing Complete
       </div>
 
       <div className="output-header">
-        <h1 className="output-title">Your Photo Strip is Ready!</h1>
-        <p className="output-subtitle">Premium quality with automatic styling</p>
+        <h1 className="output-title">AI Transform Complete!</h1>
+        <p className="output-subtitle">Digital Identity Processing Finished</p>
       </div>
       
       <div className="photo-strip-wrapper">
@@ -699,32 +885,7 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
           
           <div className="strip-logo">
             <div className="strip-logo-content">
-              <svg className="logo-monkey-svg" viewBox="0 0 100 100">
-                {/* Monkey character */}
-                <circle cx="50" cy="35" r="15" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-                <circle cx="50" cy="50" r="12" fill="#FF8C42" stroke="#E57A2E" strokeWidth="2"/>
-                {/* Eyes */}
-                <circle cx="45" cy="33" r="2.5" fill="white"/>
-                <circle cx="55" cy="33" r="2.5" fill="white"/>
-                <circle cx="45" cy="33" r="1.5" fill="black"/>
-                <circle cx="55" cy="33" r="1.5" fill="black"/>
-                {/* Smile */}
-                <path d="M 43 38 Q 50 42 57 38" stroke="black" strokeWidth="1.5" fill="none"/>
-                {/* Arms */}
-                <path d="M 38 48 Q 28 45 25 52" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                <path d="M 62 48 Q 72 45 75 52" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                {/* Legs */}
-                <path d="M 43 58 L 40 68" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-                <path d="M 57 58 L 60 68" stroke="#FF8C42" strokeWidth="3" strokeLinecap="round"/>
-                {/* Tail */}
-                <path d="M 38 54 Q 20 54 18 62" stroke="#FF8C42" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                {/* Arc under monkey */}
-                <path d="M 15 80 Q 50 70 85 80" stroke="#FFD700" strokeWidth="5" fill="none" strokeLinecap="round"/>
-              </svg>
-              <div className="strip-logo-text">
-                <span className="logo-sky">SKY</span>
-                <span className="logo-jumper">JUMPER</span>
-              </div>
+              <div className="logo-pikcha-text">PIKCHA.AI</div>
             </div>
           </div>
         </div>
@@ -736,7 +897,6 @@ const OutputScreen = ({ capturedImages, onComplete }) => {
           onClick={handlePrint}
           disabled={isPrinting}
         >
-          <span className="print-icon">🖨️</span>
           {isPrinting ? 'Printing...' : 'Print Now'}
         </button>
       </div>

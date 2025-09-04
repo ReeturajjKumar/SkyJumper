@@ -68,24 +68,25 @@ const AdminPanel = ({ isOverlay = false, onClose }) => {
 
         .admin-container {
           ${isOverlay ? 'height: 100%;' : 'min-height: 100vh;'}
-          background: ${isOverlay ? 'transparent' : 'linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%)'};
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          color: white;
+          background: ${isOverlay ? 'transparent' : 'radial-gradient(circle at center, #0a0a1a 0%, #000 100%)'};
+          font-family: 'Orbitron', 'Courier New', monospace;
+          color: #00FFFF;
           display: flex;
           flex-direction: column;
           overflow: hidden;
         }
 
         .admin-header {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(20px);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          background: rgba(0, 255, 255, 0.05);
+          backdrop-filter: blur(25px);
+          border-bottom: 2px solid rgba(0, 255, 255, 0.2);
           padding: 20px 24px;
           display: flex;
           justify-content: space-between;
           align-items: center;
           flex-shrink: 0;
           position: relative;
+          box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
         }
 
         .admin-header::before {
@@ -94,8 +95,14 @@ const AdminPanel = ({ isOverlay = false, onClose }) => {
           bottom: 0;
           left: 0;
           right: 0;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(255, 0, 128, 0.3), rgba(121, 40, 202, 0.3), rgba(70, 195, 255, 0.3), transparent);
+          height: 2px;
+          background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.5), rgba(64, 224, 208, 0.4), rgba(0, 139, 139, 0.3), transparent);
+          animation: borderFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes borderFlow {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
         }
 
         .header-left {
@@ -107,19 +114,37 @@ const AdminPanel = ({ isOverlay = false, onClose }) => {
         .admin-title {
           font-size: 20px;
           font-weight: 700;
-          background: linear-gradient(135deg, #FF0080, #7928CA, #46C3FF);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          letter-spacing: -0.5px;
+          color: #00FFFF;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          text-shadow: 
+            0 0 10px #00FFFF,
+            0 0 20px #00FFFF;
+          animation: titlePulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titlePulse {
+          from {
+            text-shadow: 
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF;
+          }
+          to {
+            text-shadow: 
+              0 0 5px #00FFFF,
+              0 0 10px #00FFFF,
+              0 0 20px #00FFFF,
+              0 0 40px #00FFFF;
+          }
         }
 
         .admin-subtitle {
           font-size: 12px;
-          color: rgba(255, 255, 255, 0.5);
+          color: #40E0D0;
           font-weight: 500;
           text-transform: uppercase;
-          letter-spacing: 1px;
+          letter-spacing: 2px;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .admin-actions {
@@ -164,47 +189,64 @@ const AdminPanel = ({ isOverlay = false, onClose }) => {
         }
 
         .save-btn {
-          background: linear-gradient(135deg, #46ff90, #25D366);
-          color: white;
-          border: none;
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          color: #000;
+          border: 2px solid #00FFFF;
           padding: 10px 18px;
           border-radius: 12px;
-          font-weight: 600;
+          font-weight: 700;
           font-size: 13px;
           cursor: pointer;
           transition: all 0.3s ease;
-          box-shadow: 0 2px 8px rgba(70, 255, 144, 0.2);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          box-shadow: 
+            0 0 20px rgba(0, 255, 255, 0.4),
+            inset 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .save-btn:hover {
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(70, 255, 144, 0.35);
+          box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.8),
+            0 6px 20px rgba(0, 255, 255, 0.4),
+            inset 0 0 20px rgba(0, 255, 255, 0.2);
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         .save-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
           transform: none;
-          box-shadow: 0 2px 8px rgba(70, 255, 144, 0.1);
+          box-shadow: 
+            0 0 10px rgba(0, 255, 255, 0.2),
+            inset 0 0 5px rgba(0, 255, 255, 0.05);
         }
 
         .logout-btn {
-          background: rgba(255, 255, 255, 0.06);
-          color: rgba(255, 255, 255, 0.8);
-          border: 1px solid rgba(255, 255, 255, 0.12);
+          background: rgba(255, 0, 100, 0.1);
+          color: #FF6B6B;
+          border: 2px solid rgba(255, 107, 107, 0.3);
           padding: 10px 16px;
           border-radius: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
           font-size: 13px;
-          font-weight: 500;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
         }
 
         .logout-btn:hover {
-          background: rgba(255, 70, 70, 0.15);
-          color: #ff6b6b;
-          border-color: rgba(255, 70, 70, 0.3);
+          background: rgba(255, 70, 70, 0.2);
+          color: #FF4444;
+          border-color: rgba(255, 68, 68, 0.5);
           transform: translateY(-1px);
+          box-shadow: 
+            0 0 25px rgba(255, 107, 107, 0.4),
+            0 5px 15px rgba(255, 107, 107, 0.3);
+          text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
         }
 
         .status-message {
@@ -212,11 +254,16 @@ const AdminPanel = ({ isOverlay = false, onClose }) => {
           border-radius: 12px;
           font-size: 12px;
           font-weight: 600;
-          background: rgba(70, 255, 144, 0.15);
-          color: #46ff90;
-          border: 1px solid rgba(70, 255, 144, 0.3);
+          background: rgba(0, 255, 255, 0.15);
+          color: #00FFFF;
+          border: 1px solid rgba(0, 255, 255, 0.4);
           animation: slideIn 0.3s ease;
-          box-shadow: 0 4px 12px rgba(70, 255, 144, 0.2);
+          box-shadow: 
+            0 0 15px rgba(0, 255, 255, 0.3),
+            0 4px 12px rgba(0, 255, 255, 0.2);
+          text-shadow: 0 0 5px #00FFFF;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         @keyframes slideIn {
@@ -233,34 +280,45 @@ const AdminPanel = ({ isOverlay = false, onClose }) => {
 
         .admin-tabs {
           display: flex;
-          background: rgba(0, 0, 0, 0.2);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 0, 0, 0.4);
+          border-bottom: 2px solid rgba(0, 255, 255, 0.2);
           flex-shrink: 0;
+          box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1);
         }
 
         .tab-button {
           flex: 1;
           background: transparent;
-          color: rgba(255, 255, 255, 0.6);
+          color: rgba(0, 255, 255, 0.6);
           border: none;
           padding: 16px 20px;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
           position: relative;
           border-bottom: 2px solid transparent;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         .tab-button:hover {
-          background: rgba(255, 255, 255, 0.05);
-          color: rgba(255, 255, 255, 0.8);
+          background: rgba(0, 255, 255, 0.05);
+          color: #00FFFF;
+          text-shadow: 0 0 5px #00FFFF;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .tab-button.active {
-          background: rgba(255, 0, 128, 0.1);
-          color: white;
-          border-bottom-color: #FF0080;
+          background: rgba(0, 255, 255, 0.15);
+          color: #00FFFF;
+          border-bottom-color: #00FFFF;
+          text-shadow: 
+            0 0 10px #00FFFF,
+            0 0 20px #00FFFF;
+          box-shadow: 
+            0 0 15px rgba(0, 255, 255, 0.3),
+            inset 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .tab-button.active::after {
@@ -270,7 +328,18 @@ const AdminPanel = ({ isOverlay = false, onClose }) => {
           left: 0;
           right: 0;
           height: 2px;
-          background: linear-gradient(90deg, #FF0080, #7928CA);
+          background: linear-gradient(90deg, #00FFFF, #40E0D0, #00FFFF);
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+          animation: tabGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes tabGlow {
+          from {
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+          }
+          to {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+          }
         }
 
         .admin-main {
@@ -279,6 +348,33 @@ const AdminPanel = ({ isOverlay = false, onClose }) => {
           overflow-y: auto;
           scrollbar-width: none;
           -ms-overflow-style: none;
+          background: 
+            radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.05), transparent),
+            radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.03), transparent);
+          position: relative;
+        }
+
+        .admin-main::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.01) 50%, transparent 52%);
+          animation: adminScan 15s linear infinite;
+          pointer-events: none;
+        }
+
+        @keyframes adminScan {
+          0%, 100% { 
+            transform: translateX(0) translateY(0);
+            opacity: 0.3;
+          }
+          50% { 
+            transform: translateX(50px) translateY(-30px);
+            opacity: 0.1;
+          }
         }
 
         .admin-main::-webkit-scrollbar {
@@ -325,8 +421,8 @@ const AdminPanel = ({ isOverlay = false, onClose }) => {
       <div className="admin-header">
         <div className="header-left">
           <div>
-            <div className="admin-title">SkyJumper Admin</div>
-            <div className="admin-subtitle">Configuration Panel</div>
+            <div className="admin-title">PIKCHA.AI Admin</div>
+            <div className="admin-subtitle">AI Control Matrix</div>
           </div>
         </div>
         

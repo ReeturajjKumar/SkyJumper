@@ -116,17 +116,23 @@ const EffectsManager = ({ settings, onUpdate }) => {
 
         .effects-title {
           font-size: 18px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .effects-count {
-          background: rgba(255, 0, 128, 0.15);
-          color: #FF0080;
+          background: rgba(0, 255, 255, 0.15);
+          color: #00FFFF;
+          border: 1px solid rgba(0, 255, 255, 0.3);
           padding: 4px 12px;
           border-radius: 16px;
           font-size: 12px;
           font-weight: 600;
+          text-shadow: 0 0 5px #00FFFF;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .effects-grid {
@@ -145,17 +151,19 @@ const EffectsManager = ({ settings, onUpdate }) => {
         }
 
         .effect-card {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.08);
+          border: 1px solid rgba(0, 255, 255, 0.2);
           border-radius: 12px;
           padding: 20px;
           transition: all 0.3s ease;
           height: fit-content;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         .effect-card:hover {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: rgba(255, 255, 255, 0.15);
+          background: rgba(0, 255, 255, 0.12);
+          border-color: rgba(0, 255, 255, 0.4);
+          box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
         }
 
         .effect-card.disabled {
@@ -176,14 +184,17 @@ const EffectsManager = ({ settings, onUpdate }) => {
 
         .effect-name {
           font-size: 16px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 4px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .effect-id {
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.5);
+          color: #40E0D0;
           font-family: 'SF Mono', 'Monaco', monospace;
           background: rgba(0, 0, 0, 0.3);
           padding: 2px 6px;
@@ -202,7 +213,8 @@ const EffectsManager = ({ settings, onUpdate }) => {
         }
 
         .toggle-switch.enabled {
-          background: linear-gradient(135deg, #46ff90, #25D366);
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
         }
 
         .toggle-slider {
@@ -250,9 +262,10 @@ const EffectsManager = ({ settings, onUpdate }) => {
 
         .prompt-textarea:focus {
           outline: none;
-          border-color: #FF0080;
+          border-color: #00FFFF;
           background: rgba(0, 0, 0, 0.4);
-          box-shadow: 0 0 0 2px rgba(255, 0, 128, 0.1);
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .prompt-textarea::placeholder {
@@ -288,18 +301,22 @@ const EffectsManager = ({ settings, onUpdate }) => {
         }
 
         .add-effect-section {
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px dashed rgba(255, 255, 255, 0.15);
+          background: rgba(0, 255, 255, 0.05);
+          border: 1px dashed rgba(0, 255, 255, 0.3);
           border-radius: 12px;
           padding: 20px;
           flex-shrink: 0;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.05);
         }
 
         .add-title {
           font-size: 14px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 16px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .add-form {
@@ -335,15 +352,16 @@ const EffectsManager = ({ settings, onUpdate }) => {
 
         .form-input:focus {
           outline: none;
-          border-color: #FF0080;
+          border-color: #00FFFF;
           background: rgba(0, 0, 0, 0.4);
-          box-shadow: 0 0 0 2px rgba(255, 0, 128, 0.1);
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .add-btn {
-          background: linear-gradient(135deg, #FF0080, #7928CA);
-          color: white;
-          border: none;
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
+          color: #000;
+          border: 2px solid #00FFFF;
           padding: 10px 16px;
           border-radius: 8px;
           cursor: pointer;
@@ -355,7 +373,10 @@ const EffectsManager = ({ settings, onUpdate }) => {
 
         .add-btn:hover {
           transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3);
+          box-shadow: 
+            0 0 20px rgba(0, 255, 255, 0.6),
+            0 4px 12px rgba(0, 255, 255, 0.3);
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         .predefined-section {
@@ -371,8 +392,11 @@ const EffectsManager = ({ settings, onUpdate }) => {
 
         .predefined-title {
           font-size: 14px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .refresh-btn {
@@ -420,25 +444,28 @@ const EffectsManager = ({ settings, onUpdate }) => {
         .predefined-card.exists {
           opacity: 0.5;
           cursor: not-allowed;
-          border-color: rgba(70, 255, 144, 0.3);
-          background: rgba(70, 255, 144, 0.05);
+          border-color: rgba(0, 255, 255, 0.3);
+          background: rgba(0, 255, 255, 0.05);
         }
 
         .predefined-name {
           font-size: 14px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 4px;
+          text-shadow: 0 0 8px #00FFFF;
         }
 
         .predefined-status {
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.5);
+          color: #00FFFF;
+          font-weight: 600;
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .predefined-prompt {
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.7);
+          color: #40E0D0;
           margin: 6px 0;
           line-height: 1.3;
           min-height: 30px;
@@ -446,16 +473,19 @@ const EffectsManager = ({ settings, onUpdate }) => {
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .enabled-effect {
-          border-color: rgba(70, 255, 144, 0.3);
-          background: rgba(70, 255, 144, 0.05);
+          border-color: rgba(0, 255, 255, 0.3);
+          background: rgba(0, 255, 255, 0.05);
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
         }
 
         .enabled-effect:hover {
-          background: rgba(70, 255, 144, 0.1);
+          background: rgba(0, 255, 255, 0.1);
           cursor: default;
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
         }
 
         .predefined-loading {
@@ -473,9 +503,10 @@ const EffectsManager = ({ settings, onUpdate }) => {
           width: 24px;
           height: 24px;
           border: 2px solid rgba(255, 255, 255, 0.1);
-          border-top: 2px solid #FF0080;
+          border-top: 2px solid #00FFFF;
           border-radius: 50%;
           animation: spin 1s linear infinite;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
         }
 
         @keyframes spin {
@@ -504,19 +535,21 @@ const EffectsManager = ({ settings, onUpdate }) => {
         }
 
         .retry-btn, .seed-btn {
-          background: rgba(255, 0, 128, 0.15);
-          color: #FF0080;
-          border: 1px solid rgba(255, 0, 128, 0.3);
+          background: rgba(0, 255, 255, 0.15);
+          color: #00FFFF;
+          border: 1px solid rgba(0, 255, 255, 0.3);
           padding: 8px 16px;
           border-radius: 6px;
           cursor: pointer;
           font-size: 12px;
           transition: all 0.3s ease;
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .retry-btn:hover, .seed-btn:hover {
-          background: rgba(255, 0, 128, 0.25);
-          border-color: rgba(255, 0, 128, 0.5);
+          background: rgba(0, 255, 255, 0.25);
+          border-color: rgba(0, 255, 255, 0.5);
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
         }
 
         .predefined-empty {

@@ -43,8 +43,8 @@ const OrientationSettings = ({ settings, onUpdate }) => {
         }
 
         .orientation-card {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.08);
+          border: 1px solid rgba(0, 255, 255, 0.2);
           border-radius: 12px;
           padding: 20px;
           cursor: pointer;
@@ -54,40 +54,49 @@ const OrientationSettings = ({ settings, onUpdate }) => {
         }
 
         .orientation-card:hover {
-          background: rgba(255, 255, 255, 0.08);
+          background: rgba(0, 255, 255, 0.12);
           transform: translateY(-2px);
-          border-color: rgba(255, 255, 255, 0.15);
+          border-color: rgba(0, 255, 255, 0.4);
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
         }
 
         .orientation-card.active {
-          border-color: #FF0080;
-          background: rgba(255, 0, 128, 0.1);
-          box-shadow: 0 8px 32px rgba(255, 0, 128, 0.2);
+          border-color: #00FFFF;
+          background: rgba(0, 255, 255, 0.15);
+          box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.4),
+            0 8px 32px rgba(0, 255, 255, 0.3);
         }
 
         .orientation-name {
           font-size: 18px;
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #00FFFF;
           margin-bottom: 8px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 0 10px #00FFFF;
         }
 
         .orientation-description {
           font-size: 13px;
-          color: rgba(255, 255, 255, 0.6);
+          color: #40E0D0;
           margin-bottom: 12px;
           line-height: 1.4;
+          text-shadow: 0 0 5px #40E0D0;
         }
 
         .orientation-dimensions {
-          background: rgba(0, 0, 0, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(0, 255, 255, 0.1);
+          border: 1px solid rgba(0, 255, 255, 0.3);
           border-radius: 16px;
           padding: 6px 12px;
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.7);
-          font-family: 'SF Mono', 'Monaco', monospace;
+          color: #00FFFF;
+          font-family: 'Orbitron', 'Monaco', monospace;
           display: inline-block;
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+          text-shadow: 0 0 5px #00FFFF;
         }
 
         .active-indicator {
@@ -96,7 +105,7 @@ const OrientationSettings = ({ settings, onUpdate }) => {
           right: 12px;
           width: 18px;
           height: 18px;
-          background: linear-gradient(135deg, #46ff90, #25D366);
+          background: linear-gradient(135deg, #00FFFF, #40E0D0);
           border-radius: 50%;
           display: flex;
           align-items: center;
